@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">
@@ -66,4 +65,3 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 =======
 # siata
 proyecto SIATA para sistema de ICATECH
->>>>>>> 5fc6ee3f52469fa144fd0b6a1d9ee807faeab3b4

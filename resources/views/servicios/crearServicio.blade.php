@@ -116,8 +116,13 @@
 </div>
 
 
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript">
+    $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            }
+    });
     function creacion() {
 
         event.preventDefault();
@@ -142,9 +147,11 @@
 
     $("#unidad").change(function() {
         var id = $(this).children(":selected").attr("value");
+        let url = {{ route('unidadOrgano', ":idUnidad") }};
+        url = url.replace(':idUnidad', id);
         console.log(id);
         $.ajax({
-            url: '/unidad/getOrgano/' + id,
+            url: url,
             type: 'get',
             dataType: 'json',
             success: function(response) {
@@ -159,7 +166,7 @@
             }
         });
 
-        
+
     });
     $("#organoSelect").change(function() {
         var id = $(this).children(":selected").attr("value");
@@ -179,13 +186,13 @@
                         departamento = response[i]['departamento'];
                     }
                     $("#servicioSelect").append("<option value='" + response[i]['idServicio'] + "-"+response[i]['idDepartamento']+"'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + response[i]['descripcion'] + "</option>");
-                    
+
                 }
                 $("#servicioSelect").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
             }
         });
 
-        
+
     });
 </script>
 

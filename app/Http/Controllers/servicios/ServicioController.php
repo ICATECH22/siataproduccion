@@ -135,7 +135,7 @@ class ServicioController extends Controller
 
         // dd($enviados->toArray());
         // dd($departamentosDirector->toArray());
-        return view('servicios\enviados', compact('enviados', 'director', 'departamentosDirector'));
+        return view('servicios.enviados', compact('enviados', 'director', 'departamentosDirector'));
     }
     public function create()
     {

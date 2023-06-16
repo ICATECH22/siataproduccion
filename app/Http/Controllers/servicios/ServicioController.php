@@ -149,7 +149,7 @@ class ServicioController extends Controller
         //     ->get(); //obtiene todos los servicios por areas excepto la misma
 
         //     dd($servicios->toArray());
-        return view('servicios\crearServicio', compact('unidades', 'servicios', 'usuario'));
+        return view('servicios.crearServicio', compact('unidades', 'servicios', 'usuario'));
     }
 
     /**

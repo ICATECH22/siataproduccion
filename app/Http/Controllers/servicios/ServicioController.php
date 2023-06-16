@@ -51,7 +51,7 @@ class ServicioController extends Controller
             ->join('users as u','u.idOrganoDepartamento','=', 'o.id')
             ->where([['u.idRol',2], ['u.idUsuario', Auth::id()] ])
             ->get();
-            
+
             //Departamento2::toBase()->where([['idparent', $unidadUsuario->idArea], ['estatus', 1]])->orWhere('id', $unidadUsuario->idArea)->get(); //obtiene las areas de la direccion
 
             foreach ($departamentosDirector as $departamento) {
@@ -61,10 +61,10 @@ class ServicioController extends Controller
                 ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
                 ->where([['dr.id', $usuario->idOrganoDepartamento], ['solicitudes.estatus', '1']])->get();
                 // SolicitudServicio::toBase()->where([['idDepartamentoSolicitante',$departamento->idDepartamento], ['estatus',1]])->get(); //obtiene las solicitudes de cada departamento
-                
+
                 foreach ($recibidosAux as $recibido) { //itera cada solicitud de una area
                     if ($recibido->estatusSolicitud != 'Pendiente') {
-                        
+
                         $historial = HistorialServicios::toBase()->where('idSolicitud', $recibido->id)->orderBy('id', 'DESC')->first();
                         $recibido->detallesServicio = $recibido->detallesServicio . ' - ' . $historial->motivo; // obtiene detalles de cada solicitud
                     }
@@ -95,7 +95,7 @@ class ServicioController extends Controller
 
         // dump($recibidos);
         // dd($recibidos, $unidadUsuario);
-        return view('servicios\bandejaEntrada', compact('recibidos', 'usuario', 'director', 'departamentosDirector'));
+        return view('servicios.bandejaEntrada', compact('recibidos', 'usuario', 'director', 'departamentosDirector'));
     }
 
 
@@ -117,7 +117,7 @@ class ServicioController extends Controller
             ->get(); //obtiene los departamentos de la direccion
 
             foreach ($departamentosDirector as $departamento) {
-                
+
                 $enviadosAux = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus')
                 ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
                 ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoReceptora')
@@ -236,7 +236,7 @@ class ServicioController extends Controller
             $usuario = User::where('idOrganoDepartamento', $idDepartamentoReceptora)->first(); //usuario jefe de departamento al que se le envia la solicitud (Area atencion)
             // dd($idDepartamentoReceptora);
 
-            // dd($usuario->toArray()); 
+            // dd($usuario->toArray());
             $departamentoSolicitante = Departamento::with('organo')->where('id', $idDepartamentoSolicitante)->first(); //el que solicita
             // dd($departamentoSolicitante->toArray(), $datosUsuario);
             $departamentoAtencion = Departamento::with('organo')->where('id', $usuario->idOrganoDepartamento)->first(); //el que atiende la soli
@@ -392,16 +392,16 @@ class ServicioController extends Controller
         return view('servicios/responderServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'unidades', 'unidadUsuario'));
     }
 
-    public function detalles2($id) //recibe id de la solicitud  
+    public function detalles2($id) //recibe id de la solicitud
     {
-        
+
 
         if (Auth::user()->idRol == 3 || Auth::user()->idRol == 1) { //para jefes de departamentos
             $datosUsuario = User::with('departamento')->where([['estatus', 1], ['idUsuario', Auth::id()]])->first();
         } else {
             $datosUsuario = User::with('organo')->where([['estatus', 1], ['idUsuario', Auth::id()]])->first();
         }
-        $unidadUsuario = $datosUsuario->departamento; 
+        $unidadUsuario = $datosUsuario->departamento;
         $unidades = Unidad::toBase()->where('estatus', 1)->get();
         $detallesServicio = SolicitudServicio::select(DB::raw('solicitudes.id,solicitudes.descripcion as detallesServicio,ds.departamento as departamentoSolicitante,dr.departamento as departamentoReceptor,solicitudes.estatusSolicitud,solicitudes.visto,solicitudes.lector,solicitudes.estatus,s2.descripcion as servicio,date_format(solicitudes.fechaAlta, "%D-%M-%Y") as fechaAltaa'))
             ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
@@ -447,7 +447,7 @@ class ServicioController extends Controller
 
     public function rechazarSolicitud(Request $request, $id)
     {
-        
+
         DB::beginTransaction();
 
         try {
@@ -482,15 +482,15 @@ class ServicioController extends Controller
 
             //jefe de departamento al que se le enviara la notificacion de solicitud rechazada
             $usuario = User::where('idOrganoDepartamento', $solicitud->idDepartamentoSolicitante)->first();
-            
+
             $departamentoSolicitante = Departamento::with('organo')->where('id', $solicitud->idDepartamentoSolicitante)->first();
             $departamentoAtencion = Departamento::with('organo')->where('id', $solicitud->idDepartamentoReceptora)->first(); //el que atiende la soli
-            
+
             // dd($departamentoSolicitante);
 
             $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
             $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
-            
+
 
             $contenido = [
                 [ //contenido para jefe de area
@@ -523,7 +523,7 @@ class ServicioController extends Controller
                     'notifiable' => true,
                 ]
             ];
-            
+
             if ($infoDirectorAtencion->idUsuario == $infoDirectorSolicitante->idUsuario) {
                 $contenido[1]['notifiable'] = false;
             }
@@ -576,7 +576,7 @@ class ServicioController extends Controller
     }
     public function aceptarSolicitud(Request $request, $id)
     {
-        
+
         DB::beginTransaction();
         try {
 
@@ -589,14 +589,14 @@ class ServicioController extends Controller
                     'fechaUMod' => Carbon::now()
                 ]);
 
-           
+
 
 
             //jefe de departamento al que se le enviara la notificacion de solicitud aceptada
             $solicitud = SolicitudServicio::where('id', $id)->first();
             $servicio = Servicios::where('idServicio', $solicitud->idServicio)->first();
-            
-            
+
+
             $usuario = User::where('idOrganoDepartamento', $solicitud->idDepartamentoSolicitante)->first();
 
             $departamentoSolicitante = Departamento::with('organo')->where('id', $solicitud->idDepartamentoSolicitante)->first();
@@ -698,7 +698,7 @@ class ServicioController extends Controller
 
     public function corregirSolicitud(Request $request, $id)
     {
-        
+
 
         $validExtensions = ['pdf', 'jpg', 'jpeg', 'xls', 'xlsx', 'docx'];
 
@@ -787,7 +787,7 @@ class ServicioController extends Controller
             $departamentoAtencion = Departamento::with('organo')->where('id', $solicitud->idDepartamentoReceptora)->first();
             // dd($departamentoSolicitante->toArray(), $departamentoAtencion->toArray());
 
-           
+
 
             $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
             $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion

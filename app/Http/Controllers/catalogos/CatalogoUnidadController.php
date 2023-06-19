@@ -27,7 +27,7 @@ class CatalogoUnidadController extends Controller
 
         $unidades = Unidad::toBase()->where('estatus', '1')->get();
 
-        return view('catalogos\unidades\unidadLista', compact('unidades'));
+        return view('catalogos.unidades.unidadLista', compact('unidades'));
     }
 
     public function create()
@@ -35,8 +35,8 @@ class CatalogoUnidadController extends Controller
         //
         $direcciones = Unidad::toBase()->where([['estatus', '1']])->get();
         $usuarios = User::toBase()->where('estatus', '1')->get();
-        
-        return view('catalogos\unidades\unidadCrear', compact('direcciones', 'usuarios'));
+
+        return view('catalogos.unidades.unidadCrear', compact('direcciones', 'usuarios'));
     }
 
     /**
@@ -48,7 +48,7 @@ class CatalogoUnidadController extends Controller
     public function store(Request $request)
     {
         //
-        
+
         DB::beginTransaction();
         try {
             Unidad::create([
@@ -82,8 +82,8 @@ class CatalogoUnidadController extends Controller
         $unidad = Unidad::toBase()->where('id', $id)->get()->first();
         $direcciones = Unidad::toBase()->where([['estatus', '1'], ['idparent', 1]])->get();
 
-        // dd($organo); 
-        return view('catalogos\unidades\unidadEditar', compact('organo', 'unidad', 'direcciones'));
+        // dd($organo);
+        return view('catalogos.unidades.unidadEditar', compact('organo', 'unidad', 'direcciones'));
     }
     /**
      * Update the specified resource in storage.
@@ -94,7 +94,7 @@ class CatalogoUnidadController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         DB::beginTransaction();
         try {
             DB::table('unidad')
@@ -161,7 +161,7 @@ class CatalogoUnidadController extends Controller
     }
     public function getServiciosDepartamentos($idDepartamento)
     {
-     
+
         $departamentos = Departamento::select('departamento.id','departamento.departamento','departamento.titular','departamentoservicios.idDepartamento','departamentoservicios.idServicio','servicios.idServicio','servicios.descripcion')
         ->join('departamentoservicios', 'departamentoservicios.idDepartamento','=', 'departamento.id')
         ->join('servicios', 'servicios.idServicio','=', 'departamentoservicios.idServicio')

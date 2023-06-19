@@ -26,7 +26,7 @@ class CatalogoServiciosController extends Controller
 
         $servicios = Servicios::toBase()->where('estatus', '1')->get();
 
-        return view('catalogos\servicios\serviciosLista', compact('servicios'));
+        return view('catalogos.servicios.serviciosLista', compact('servicios'));
     }
 
     public function create()
@@ -35,7 +35,7 @@ class CatalogoServiciosController extends Controller
         $unidades = Unidad::with('organos.departamentos')->where('estatus', '1')->get(); // se obtiene todos los servicios de todos los departamentos de todas los organos de todas las unidades
         $usuario = User::with('rol')->where('idUsuario', Auth::id())->first();
 
-        return view('catalogos\servicios\serviciosCrear', compact('unidades', 'usuario'));
+        return view('catalogos.servicios.serviciosCrear', compact('unidades', 'usuario'));
     }
     public function buscador(Request $request)
     {
@@ -85,7 +85,7 @@ class CatalogoServiciosController extends Controller
         //
         $servicio = Servicios::toBase()->where('idServicio', $id)->first();
         $departamentos = DB::select('CALL `listaUnidades`()');
-        return view('catalogos\servicios\servicioEditar', compact('servicio', 'departamentos'));
+        return view('catalogos.servicios.servicioEditar', compact('servicio', 'departamentos'));
     }
 
 

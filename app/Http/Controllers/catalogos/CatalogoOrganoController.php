@@ -23,14 +23,14 @@ class CatalogoOrganoController extends Controller
 
         $unidades = DB::select('CALL `listaUnidades`()');
 
-        return view('catalogos\organos\organosLista', compact('unidades'));
+        return view('catalogos.organos.organosLista', compact('unidades'));
     }
 
     public function create()
     {
         //
         $direcciones = Departamento2::toBase()->where([['estatus', '1'], ['idparent', 1]])->get();
-        return view('catalogos\organos\organoCrear', compact('direcciones'));
+        return view('catalogos.organos.organoCrear', compact('direcciones'));
     }
 
     /**
@@ -83,8 +83,8 @@ class CatalogoOrganoController extends Controller
         $unidad = Departamento2::toBase()->where('id', $id)->get()->first();
         $direcciones = Departamento2::toBase()->where([['estatus', '1'], ['idparent', 1]])->get();
 
-        // dd($organo); 
-        return view('catalogos\organos\organoEditar', compact('organo', 'unidad', 'direcciones'));
+        // dd($organo);
+        return view('catalogos.organos.organoEditar', compact('organo', 'unidad', 'direcciones'));
     }
     /**
      * Update the specified resource in storage.
@@ -95,7 +95,7 @@ class CatalogoOrganoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         DB::beginTransaction();
         try {
             DB::table('departamento2')

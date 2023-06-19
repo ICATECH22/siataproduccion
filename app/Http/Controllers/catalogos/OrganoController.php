@@ -18,14 +18,14 @@ class OrganoController extends Controller
         //
         $direcciones = Organo::toBase()->where([['estatus', '1']])->get();
 
-        return view('catalogos\organo\organoLista', compact('direcciones'));
+        return view('catalogos.organo.organoLista', compact('direcciones'));
     }
 
     public function create()
     {
         //
         $unidades = Unidad::toBase()->where('estatus', '1')->get();
-        return view('catalogos\organo\organoCrear', compact('unidades'));
+        return view('catalogos.organo.organoCrear', compact('unidades'));
     }
 
     public function store(Request $request)
@@ -74,7 +74,7 @@ class OrganoController extends Controller
     public function edit($id)
     {
         $direccion = Organo::where('id', $id)->first();
-        return view('catalogos\organo\organoditar', compact('direccion'));
+        return view('catalogos.organo.organoditar', compact('direccion'));
     }
 
     public function update(Request $request, $id)

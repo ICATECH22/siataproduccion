@@ -26,40 +26,40 @@ class CatalogoDepartamentoController extends Controller
 
         $departamentos = Departamento::with('organo')->where('estatus', '1')->get();
         // dd($departamentos->toArray());
-        return view('catalogos\departamentos\departamentosLista', compact('departamentos'));
+        return view('catalogos.departamentos.departamentosLista', compact('departamentos'));
     }
 
     public function create(Request $request)
     {
         //
         $organos = Organo::toBase()->where('estatus', '1')->get();
-        return view('catalogos\departamentos\departamentosCrear', compact('organos'));
+        return view('catalogos.departamentos.departamentosCrear', compact('organos'));
     }
-    
 
-    
+
+
 
     public function asignarServicios($idDepartamento)
     {
         $servicios = Servicios::toBase()->where('estatus', 1)->get();
         $departamento = Departamento::where('id', $idDepartamento)->first();
-        return view('catalogos\departamentos\asignarServicio', compact('servicios','departamento','idDepartamento'));
+        return view('catalogos.departamentos.asignarServicio', compact('servicios','departamento','idDepartamento'));
     }
     public function storeAsignarServicios(Request $request, $idDepartamento)
     {
-        
+
         // dd($request->toArray(), $idDepartamento);
         DB::beginTransaction();
         try {
             $idServicio = $request->idServicio;
-            
+
             if($request->isNuevoServicio == 'on'){
                 $idServicio = Servicios::create([
                     'descripcion' => $request->nuevoServicio,
                     'estatus' => 1,
                     'idUsuarioAlta' => Auth::id(),
                     'fechaUMod' => null,
-                    
+
                 ]);
                 $idServicio = $idServicio->idServicio;
             }
@@ -71,7 +71,7 @@ class CatalogoDepartamentoController extends Controller
                 'idUsuarioAlta' => Auth::id(),
                 'fechaUMod' => null,
             ]);
-           
+
             DB::commit();
             session(['message' => 'El registro se ha guardado']);
             session(['alert' => 'alert-success']);
@@ -80,7 +80,7 @@ class CatalogoDepartamentoController extends Controller
             throw $e;
             session(['message' => 'Algo salió mal intente nuevamente']);
             session(['alert' => 'alert-danger']);
-            
+
         }
 
         return redirect()->route('departamentosLista');
@@ -151,7 +151,7 @@ class CatalogoDepartamentoController extends Controller
 
         $departamento = Departamento::toBase()->where('idDepartamento', $id)->first();
         $unidades = Unidad::toBase()->where('estatus', '1')->get();
-        return view('catalogos\departamentos\departamentoEditar', compact('departamento', 'unidades'));
+        return view('catalogos.departamentos.departamentoEditar', compact('departamento', 'unidades'));
     }
 
 

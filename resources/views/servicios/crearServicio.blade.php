@@ -147,8 +147,7 @@
 
     $("#unidad").change(function() {
         var id = $(this).children(":selected").attr("value");
-        let url = {{ route('unidadOrgano', ":idUnidad") }};
-        url = url.replace(':idUnidad', id);
+        let url = {{ route('unidadOrgano', `${id}`) }};
         console.log(id);
         $.ajax({
             url: url,
@@ -176,7 +175,6 @@
             type: 'get',
             dataType: 'json',
             success: function(response) {
-                console.log(response)
                 $("#servicioSelect").empty();
                 var departamento = '';
                 for (var i = 0; i < response.length; i++) {

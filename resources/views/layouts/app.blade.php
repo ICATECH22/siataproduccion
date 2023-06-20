@@ -34,7 +34,7 @@
     <!-- inbox css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@3.7.95/css/materialdesignicons.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" defer></script>
 
 
     <!-- DATATABLES -->

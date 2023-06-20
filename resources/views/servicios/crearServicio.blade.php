@@ -144,54 +144,54 @@
             }
         })
     }
+    $(document).ready(function(){
+        $("#unidad").change(function() {
+            var id = $(this).children(":selected").attr("value");
+            let url = {{ route('unidadOrgano', "idUnidad") }};
+            url = url.replace('idUnidad', id);
+            console.log(url);
+            $.ajax({
+                url: url,
+                type: 'get',
+                dataType: 'json',
+                success: function(response) {
+                    console.log(response)
+                    $("#organoSelect").empty();
 
-    $("#unidad").change(function() {
-        var id = $(this).children(":selected").attr("value");
-        let url = {{ route('unidadOrgano', "idUnidad") }};
-        url = url.replace('idUnidad', id);
-        console.log(url);
-        $.ajax({
-            url: url,
-            type: 'get',
-            dataType: 'json',
-            success: function(response) {
-                console.log(response)
-                $("#organoSelect").empty();
-
-                for (var i = 0; i < response.length; i++) {
-                    var idUnidad = response[i]['idparent'];
-                    $("#organoSelect").append("<option value='" + response[i]['id'] + "'>" + response[i]['organo'] + "</option>");
-                }
-                $("#organoSelect").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
-            }
-        });
-
-
-    });
-    $("#organoSelect").change(function() {
-        var id = $(this).children(":selected").attr("value");
-        console.log(id);
-        $.ajax({
-            url: '/departamentos/servicios/' + id,
-            type: 'get',
-            dataType: 'json',
-            success: function(response) {
-                $("#servicioSelect").empty();
-                var departamento = '';
-                for (var i = 0; i < response.length; i++) {
-                    if(departamento != response[i]['departamento'] ){
-                        $("#servicioSelect").append("<option disabled> ────────────────────────────────────────────────── </option>");
-                        $("#servicioSelect").append("<option disabled>" + response[i]['departamento'] + "</option>");
-                        departamento = response[i]['departamento'];
+                    for (var i = 0; i < response.length; i++) {
+                        var idUnidad = response[i]['idparent'];
+                        $("#organoSelect").append("<option value='" + response[i]['id'] + "'>" + response[i]['organo'] + "</option>");
                     }
-                    $("#servicioSelect").append("<option value='" + response[i]['idServicio'] + "-"+response[i]['idDepartamento']+"'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + response[i]['descripcion'] + "</option>");
-
+                    $("#organoSelect").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
                 }
-                $("#servicioSelect").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
-            }
+            });
         });
 
+        $("#organoSelect").change(function() {
+            var id = $(this).children(":selected").attr("value");
+            console.log(id);
+            $.ajax({
+                url: '/departamentos/servicios/' + id,
+                type: 'get',
+                dataType: 'json',
+                success: function(response) {
+                    $("#servicioSelect").empty();
+                    var departamento = '';
+                    for (var i = 0; i < response.length; i++) {
+                        if(departamento != response[i]['departamento'] ){
+                            $("#servicioSelect").append("<option disabled> ────────────────────────────────────────────────── </option>");
+                            $("#servicioSelect").append("<option disabled>" + response[i]['departamento'] + "</option>");
+                            departamento = response[i]['departamento'];
+                        }
+                        $("#servicioSelect").append("<option value='" + response[i]['idServicio'] + "-"+response[i]['idDepartamento']+"'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + response[i]['descripcion'] + "</option>");
 
+                    }
+                    $("#servicioSelect").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
+                }
+            });
+
+
+        });
     });
 </script>
 

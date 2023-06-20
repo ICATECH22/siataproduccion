@@ -32,8 +32,8 @@
 
     <!-- <link type="text/css" href="{{ asset('argon') }}/css/input-slide.css" rel="stylesheet"> -->
     <!-- inbox css -->
-    <link rel="stylesheet" href="//cdn.materialdesignicons.com/3.7.95/css/materialdesignicons.min.css">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@3.7.95/css/materialdesignicons.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" defer></script>
 
 
@@ -78,7 +78,7 @@
     <script src="{{ asset('argon') }}/js/custom-file-input.js"></script>
 
     <!-- alerts"(modals)" -->
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- alerts"(ocultar automaticamente pop up's)" -->
     <script src="{{ asset('argon') }}/js/alerts.js" defer></script>

@@ -147,8 +147,8 @@
 
     $("#unidad").change(function() {
         var id = $(this).children(":selected").attr("value");
-        let url = {{ route('unidadOrgano', ":idUnidad") }};
-        url = url.replace(':idUnidad', id);
+        let url = {{ route('unidadOrgano', "idUnidad") }};
+        url = url.replace('idUnidad', id);
         console.log(url);
         $.ajax({
             url: url,

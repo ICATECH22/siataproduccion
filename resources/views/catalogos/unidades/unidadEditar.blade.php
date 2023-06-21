@@ -39,7 +39,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
                                 </div>
-                                <input class="form-control{{ $errors->has('titular') ? ' is-invalid' : '' }}" placeholder="{{ __('Titular') }}" type="text" name="titular" 
+                                <input class="form-control{{ $errors->has('titular') ? ' is-invalid' : '' }}" placeholder="{{ __('Titular') }}" type="text" name="titular"
                                 value="{{ old('titular', $direccion->titular) }}"  autofocus>
                             </div>
                             @if ($errors->has('titular'))
@@ -112,7 +112,7 @@
                                 </div>
                             </div>
 
-                            
+
 
                         </div>
                         <div class="row justify-content-end">
@@ -135,7 +135,7 @@
         event.preventDefault();
         Swal.fire({
             title: '¿Estás seguro de guardar este registro?',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',

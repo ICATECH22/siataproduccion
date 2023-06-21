@@ -58,7 +58,7 @@
                             <td>
                                 <a href="{{route('departamentoActualizar', $departamento->id)}}" ><i class="fas fa-pen"></i></a>
                                 <a href="{{route('asignarServicios', $departamento->id)}}" ><i class="fas fa-pen"></i></a>
-                                
+
 
                                 <a href="" onclick="eliminacion({{$departamento->id}})" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar"><i class="fas fa-trash"></i></a>
 
@@ -96,7 +96,7 @@
         event.preventDefault();
         Swal.fire({
             title: '¿Estás seguro de eliminar este departamento?',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',

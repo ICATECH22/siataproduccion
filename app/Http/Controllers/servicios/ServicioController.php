@@ -234,7 +234,6 @@ class ServicioController extends Controller
             ]);
 
             $usuario = User::where('idOrganoDepartamento', $idDepartamentoReceptora)->first(); //usuario jefe de departamento al que se le envia la solicitud (Area atencion)
-            // dd($idDepartamentoReceptora);
 
             // dd($usuario->toArray());
             $departamentoSolicitante = Departamento::with('organo')->where('id', $idDepartamentoSolicitante)->first(); //el que solicita

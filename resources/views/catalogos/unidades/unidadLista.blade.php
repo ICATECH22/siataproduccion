@@ -91,7 +91,7 @@
         event.preventDefault();
         Swal.fire({
             title: '¿Estás seguro de eliminar este departamento?',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',

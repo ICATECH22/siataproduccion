@@ -53,7 +53,7 @@
                                 {{$servicio->descripcion}}
                             </td>
                             <td>
-                                {{$servicio->departamento->area}}
+                                {{-- {{$servicio->departamento->departamento}} --}}
                             </td>
 
                             <td>
@@ -102,7 +102,7 @@
         event.preventDefault();
         Swal.fire({
             title: '¿Estás seguro de eliminar este servicio?',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',

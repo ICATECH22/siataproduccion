@@ -240,7 +240,7 @@
         event.preventDefault();
         Swal.fire({
             title: 'Se responderá esta solicitud como VALIDA, ¿Desea continuar?',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',

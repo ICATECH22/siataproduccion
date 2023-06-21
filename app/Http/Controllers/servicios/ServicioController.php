@@ -180,7 +180,7 @@ class ServicioController extends Controller
                 $nombre = $archivo->getClientOriginalName();
             }
 
-            $destino = 'files/archivosservicios';
+            $destino = 'files/archivosservicios'; // el destino dónde se guardará el archivo
 
             $datosUsuario = User::toBase()->where([
                 ['estatus', 1],
@@ -212,7 +212,7 @@ class ServicioController extends Controller
                 $archivo =  UrlArchivo::create([
                     'idSolicitud' => $datosSolicitud->id,
                     'tipoArchivo' => 'original',
-                    'urlArchivo' => $request->archivo->move($destino, $nombre),
+                    'urlArchivo' => $request->archivo->move(public_path($destino), $nombre),
                     'nombreArchivo' => $nombre,
                     'estatus' => 1,
                     'idUsuarioAlta' => Auth::id(),
@@ -757,7 +757,7 @@ class ServicioController extends Controller
                     DB::table('archivos')
                         ->where([['idSolicitud', $id], ['tipoArchivo', 'original']])
                         ->update([
-                            'urlArchivo' => $request->archivoNuevo->move($destino, $nombreArchivo),
+                            'urlArchivo' => $request->archivoNuevo->move(public_path($destino), $nombreArchivo),
                             'nombreArchivo' => $nombreArchivo,
                             'idUsuarioUMod' => Auth::id(),
                             'fechaUMod' => Carbon::now()
@@ -766,7 +766,7 @@ class ServicioController extends Controller
                     $archivo =  UrlArchivo::create([
                         'idSolicitud' => $id,
                         'tipoArchivo' => 'original',
-                        'urlArchivo' => $request->archivoNuevo->move($destino, $nombreArchivo),
+                        'urlArchivo' => $request->archivoNuevo->move(public_path($destino), $nombreArchivo),
                         'nombreArchivo' => $nombreArchivo,
                         'estatus' => 1,
                         'idUsuarioAlta' => Auth::id(),
@@ -934,7 +934,7 @@ class ServicioController extends Controller
                 $archivo =  UrlArchivo::create([
                     'idSolicitud' => $id,
                     'tipoArchivo' => 'adjunto',
-                    'urlArchivo' => $file->move($destino, $nombre),
+                    'urlArchivo' => $file->move(public_path($destino), $nombre),
                     'nombreArchivo' => $nombre,
                     'estatus' => 1,
                     'idUsuarioAlta' => Auth::id(),

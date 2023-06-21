@@ -379,17 +379,22 @@ class ServicioController extends Controller
         // dd($files);
         $unidadUsuario =  $datosUsuario->departamento;
         $unidades = []; // Departamento2::with('servicios')->where([['estatus', '1'], ['idparent', '!=', '1'], ['area', '!=', 'Direccion General']])->get();
-        $detallesServicio = SolicitudServicio::select(DB::raw('solicitudes.id,solicitudes.descripcion as detallesServicio,ds.departamento as departamentoSolicitante,dr.departamento as departamentoReceptor,solicitudes.estatusSolicitud,solicitudes.visto,solicitudes.lector,solicitudes.estatus,s2.descripcion as servicio,date_format(solicitudes.fechaAlta, "%D-%M-%Y") as fechaAltaa'))
+        $detallesServicio = SolicitudServicio::select(DB::raw('solicitudes.id,solicitudes.descripcion as detallesServicio,ds.departamento as departamentoSolicitante,dr.departamento as departamentoReceptor,solicitudes.estatusSolicitud,solicitudes.visto,solicitudes.lector,solicitudes.estatus,s2.descripcion as servicio, solicitudes.fechaAlta as fechaAltaa'))
         ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
         ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoSolicitante')
         ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
         ->where([['solicitudes.id', $id], ['solicitudes.estatus', '1']])->first();
 
+        $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+        $fecha = Carbon::parse($detallesServicio->fechaAltaa);
+        $mes = $meses[($fecha->format('n')) - 1];
+        $fechaEnviado = $fecha->format('d') . ' de ' . $mes . ' de ' . $fecha->format('Y');
+
         $infoAdicionalSolicitud = HistorialServicios::toBase()->where('idSolicitud', $detallesServicio->id)->orderBy('id', 'DESC')->first();
         $infoAdicionalSolicitud->fechaAlta = date('d/M/Y ', strtotime($infoAdicionalSolicitud->fechaAlta)) . ' a las ' . date('H:i', strtotime($infoAdicionalSolicitud->fechaAlta));
 
         // dd($unidadUsuario,$detallesServicio);
-        return view('servicios/responderServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'unidades', 'unidadUsuario'));
+        return view('servicios.responderServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'unidades', 'unidadUsuario', 'fechaEnviado'));
     }
 
     public function detalles2($id) //recibe id de la solicitud
@@ -412,6 +417,13 @@ class ServicioController extends Controller
 
         // dd($detallesServicio->toArray(), $unidadUsuario);
         $files = UrlArchivo::toBase()->where('idSolicitud', $id)->get();
+
+        // obtener fecha del servicio
+        $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+        $fecha = Carbon::parse($detallesServicio->fechaAltaa);
+        $mes = $meses[($fecha->format('n')) - 1];
+        $fechaEnvio = $fecha->format('d') . ' de ' . $mes . ' de ' . $fecha->format('Y');
+        // agregado por Daniel Méndez 21-06-2023
 
         $infoAdicionalSolicitud = HistorialServicios::toBase()->where('idSolicitud', $detallesServicio->id)->orderBy('id', 'DESC')->first();
         $infoAdicionalSolicitud->fechaAlta = date('d/M/Y ', strtotime($infoAdicionalSolicitud->fechaAlta)) . ' a las ' . date('H:i', strtotime($infoAdicionalSolicitud->fechaAlta));
@@ -436,11 +448,12 @@ class ServicioController extends Controller
                 return redirect()->back();
             }
         }
+
         // dump($infoAdicionalSolicitud);
         // dump($files);
         // dd($unidadUsuario,$detallesServicio);
         // return Response()->download('../public/'.$detallesServicio->urlArchivo);
-        return view('servicios/detallesServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'unidades', 'unidadUsuario'));
+        return view('servicios.detallesServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'unidades', 'unidadUsuario', 'fechaEnvio'));
     }
 
 

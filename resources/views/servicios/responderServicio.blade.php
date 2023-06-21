@@ -40,7 +40,7 @@
 
                     @csrf
                     <div class="container">
-                        
+
                         <div class="email-wrapper wrapper">
                             <div class="row align-items-stretch">
                                 <div class="mail-view d-none d-md-block col-md-12 col-lg-12 bg-white">
@@ -162,7 +162,7 @@
                                                     &nbsp;<i class="mdi mdi-account-multiple-plus"></i>
                                                 </p>
                                                 <p class="sender-email">
-                                                    Enviado el: {{$detallesServicio->fechaAltaa}}
+                                                    Enviado el: {{$fechaEnviado}}
                                                 </p>
                                             </div>
                                         </div>
@@ -197,8 +197,8 @@
                                                     <div class="details">
                                                         <p class="file-name">{{$file->nombreArchivo}}</p>
                                                         <div class="buttons">
-                                                            <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">View</a>
-                                                            <a href="{{ route('descargarArchivo',$file->id) }}" class="download">Download</a>
+                                                            <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
+                                                            <a href="{{ route('descargarArchivo',$file->id) }}" class="download">Descargar</a>
                                                         </div>
                                                     </div>
                                                 </li>

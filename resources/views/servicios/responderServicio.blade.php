@@ -173,10 +173,10 @@
 
                                             <div class="details">
                                                 <p class="sender-email">
-                                                    Respuesta enviado el : {{$infoAdicionalSolicitud->fechaAlta}}
+                                                    Respuesta enviado el : {{$fechaEnviado}}
                                                 </p>
                                                 <p class="msg-subject">
-                                                    {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'Motivo de rechazo': 'Motivo de Transferencia' }}: {{$infoAdicionalSolicitud->motivo}}
+                                                    {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'Motivo de rechazo': 'Repuesta de la solicitud' }}: {{$infoAdicionalSolicitud->motivo}}
                                                 </p>
                                             </div>
                                         </div>

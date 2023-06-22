@@ -43,7 +43,7 @@ class UsuarioController extends Controller
         $organos = Organo::toBase()->where('estatus', '1')->get();
         // dd($organos->toArray());
         $direcciones = Departamento::toBase()->where([['estatus', '1']])->get();
-        return view('usuarios\usuarioCrear', compact('organos','direcciones'));
+        return view('usuarios.usuarioCrear', compact('organos','direcciones'));
     }
     /**
      * Store a newly created resource in storage.
@@ -61,7 +61,7 @@ class UsuarioController extends Controller
             $idArea = $request->idDireccion;
         }
 
-            
+
         // dd($request->toArray(), $idRol);
 
         // dd($request->toArray());
@@ -94,10 +94,10 @@ class UsuarioController extends Controller
 
 
         $usuario = User::with('rol','departamento')->where('idUsuario', $id)->first();
-        
+
         $organos = Organo::toBase()->where('estatus', '1')->get();
         $departamentos = Departamento::toBase()->where([['estatus', '1']])->get();
-        
+
         // dd($usuario->toArray(), $organos->toArray(), $departamentos->toArray());
         return view('usuarios\editarUsuario', compact('usuario', 'organos', 'departamentos'));
     }

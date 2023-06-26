@@ -7,6 +7,14 @@
 'class' => 'col-lg-12'
 ])
 
+<style>
+    @media (min-width: 768px) {
+      .modal-xl {
+        width: 90%;
+       max-width:1200px;
+      }
+    }
+</style>
 
 <div class="container-fluid mt--7">
     <div class="row">
@@ -18,7 +26,7 @@
                                 <i class="fas fa-chevron-left"></i>
                             </a>Regresar bandeja de entrada</h3>
 
-                        <h3 style="margin-left: 20px;" class="mb-0">&nbsp;&nbsp;|&nbsp;&nbsp;ESTATUS&nbsp;&nbsp;|</h3>
+                        <h3 style="margin-left: 20px;" class="mb-0">&nbsp;&nbsp;|&nbsp; ESTADO DE LA SOLICITUD &nbsp;|</h3>
 
                         <h3 style="margin-left: 20px;" class="mb-0">
 
@@ -37,7 +45,6 @@
 
                 </div>
                 <div class="card-body container-fluid">
-
                     @csrf
                     <div class="container">
 
@@ -48,104 +55,21 @@
                                         <div class="col-md-12 mb-4 mt-4">
                                             <div class="btn-toolbar">
                                                 @if($unidadUsuario->id != $detallesServicio->idDepartamentoSolicitante )
-                                                <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'onclick=rechazar()' : ''}} type="button" class="btn btn-danger"><i class="mdi mdi-reply text-danger mr-2"></i> Rechazar</button>
-                                                <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'onclick=aceptar()' : ''}} type="button" class="btn btn-success"><i class="mdi mdi-check text-success mr-2"></i>Atender</button>
-                                                <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'onclick=mostrarOpcionesTransferir()' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-swap-horizontal text-info mr-2"></i>Turnar</button>
+                                                    @if($detallesServicio->estatusSolicitud != 'Atendido')
+                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'onclick=rechazar()' : ''}} type="button" class="btn btn-danger"><i class="mdi mdi-reply text-danger mr-2"></i> Rechazar</button>
+                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'data-toggle=modal data-target=#modalAtender' : ''}} type="button" class="btn btn-success"><i class="mdi mdi-check text-success mr-2"></i>Atender</button>
+                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'data-toggle=modal data-target=#turnadoModal' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-swap-horizontal text-info mr-2"></i>Turnar</button>
+                                                    @endif
                                                 @else
-                                                @if($detallesServicio->estatusSolicitud == 'Rechazado')
-                                                <button {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'onclick=mostrarOpcionesCorregir()' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-plus-box text-info mr-2"></i>Enviar nueva correccion</button>
+                                                    @if($detallesServicio->estatusSolicitud == 'Rechazado')
+                                                    <button {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'onclick=mostrarOpcionesCorregir()' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-plus-box text-info mr-2"></i>Enviar nueva correccion</button>
+                                                    @endif
                                                 @endif
-                                                @endif
-
-
-
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- div transferir solicitud cuando sea requerido -->
-
-                                    <div class="message-body" id="formTransferir" style="display: none">
-                                        <div class="sender-details">
-                                            <div id="opciones-transferir" class="col-md-12">
-                                                <div class="card-body">
-                                                    <form id="transferirForm" action="{{route('transferirSolicitud',$detallesServicio->id)}}" method="POST" enctype="multipart/form-data">
-                                                        @csrf
-                                                        <div class="row justify-content-center">
-                                                            <div class="col-md-12 col-sm-12">
-                                                                <div class="form-group">
-
-                                                                    <label for="input-unidad">Turnar a: <span class="form-control-label">*</span></label>
-                                                                    <select style="width:100%;" class="form-control  @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="servicio" id="servicio" onChange="myNewFunction(this);">
-                                                                        <option class="form-control " selected="true" disabled="disabled">Selecciona un servicio</option>
-
-                                                                        @foreach ($unidades as $unidad)
-                                                                        @if($unidad->id != $unidadUsuario->idArea)
-                                                                        <option disabled name="idUnidad" value="{{ $unidad->id }}" style="background-color: #3332;">Unidad: {{ $unidad->area }}</option>
-                                                                        @foreach ($unidad->servicios as $servicio)
-                                                                        @if($servicio->estatus == 1)
-                                                                        <option id="servicio" name="servicio" value="{{ $servicio->idServicio }}-{{ $unidad->id }}">&nbsp;&nbsp;&nbsp;&nbsp;Servicio: {{ $servicio->descripcion }}</option>
-                                                                        @endif
-                                                                        @endforeach
-                                                                        @endif
-                                                                        <option disabled>──────────────────────────────────────────────────</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    @error('servicio')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                    @enderror
-
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-
-                                                        <div class="toolbar" role="toolbar">
-                                                            <button type="button" class="btn btn-light">
-                                                                <span class="fa fa-paperclip"></span>
-                                                                <input hidden type="file" name="archivo" id="file-1" class="inputfile2 @error('archivo')  is-invalid @enderror" data-multiple-caption="{count} files selected" multiple />
-                                                                <label for="file-1"><span>Adjuntar nuevo archivo&hellip;</span></label>
-                                                                @error('archivo')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                                @enderror
-                                                            </button>
-                                                        </div>
-                                                        <div class="form-group mt-4">
-
-                                                            <div class="form-group">
-                                                                <label for="Notas">Observaciones</label>
-                                                                <textarea id="detalles" placeholder="Escriba aqui las observaciones de la transferencia" name="descripcionTransferencia" rows="8" cols="20" class="form-control @error('descripcionTransferencia')  is-invalid @enderror"></textarea>
-                                                                @error('descripcionTransferencia')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                                @enderror
-                                                            </div>
-
-
-                                                        </div>
-
-                                                        <div class="row justify-content-end">
-                                                            <div class="col-md-6 col-sm-2 col align-self-end">
-                                                                <!-- <a type="button" href="{{route('departamentosLista')}}" class="btnCancel">Cancelar</a> -->
-                                                                <!-- <button type="button" class="btnCancel"><a href="" class="btnCancel">Cancelar</a></button> -->
-                                                                <a onclick="ocultarOpcionesTransferir()" type="button" class="btn btn-danger mt-4">{{ __('Cancelar') }}</a>
-                                                                <button onclick="transferir()" class="btn btn-success mt-4">{{ __('Turnar') }} </button>
-
-                                                            </div>
-                                                        </div>
-
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
 
 
                                     <div class="message-body">
@@ -190,21 +114,41 @@
                                                 <p class="msg-subject">
                                                     Archivos adjuntos:
                                                 </p>
-
+                                                <div class="form-row">
                                                 @foreach($files as $file)
-                                                <li>
-                                                    <div class="thumb"><i class="mdi mdi-file-image"></i></div>
-                                                    <div class="details">
-                                                        <p class="file-name">{{$file->nombreArchivo}}</p>
-                                                        <div class="buttons">
-                                                            <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
-                                                            <a href="{{ route('descargarArchivo',$file->id) }}" class="download">Descargar</a>
+                                                @php
+                                                    $info = pathinfo(storage_path().$file->urlArchivo);
+                                                    $ext = $info['extension'];
+                                                @endphp
+                                                <div class="col-sm-3">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                          <h5 class="card-title"><div class="thumb"><i class="mdi mdi-file-image"></i></div> {{$file->nombreArchivo}}</h5>
+                                                         @if ($file->tipoArchivo == 'atendido')
+                                                            <h6 class="card-subtitle mb-2 text-muted">Archivo de Seguimiento</h6>
+                                                         @else
+                                                            <h6 class="card-subtitle mb-2 text-muted">Archivo de Solicitud</h6>
+                                                         @endif
+                                                        @switch($ext)
+                                                            @case('pdf')
+                                                                <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
+                                                                @break
+                                                            @case('jpeg')
+                                                                <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
+                                                                @break
+                                                            @case('jpg')
+                                                                <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
+                                                                @break
+                                                            @default
+
+                                                        @endswitch
+                                                          <a href="{{ route('descargarArchivo',$file->id) }}" class="download">Descargar</a>
                                                         </div>
                                                     </div>
-                                                </li>
+                                                </div>
                                                 <br>
                                                 @endforeach
-
+                                                </div>
                                             </ul>
                                         </div>
                                     </div>
@@ -221,56 +165,245 @@
 
 
     </div>
+    {{-- modal add folio --}}
+    @include('modals.modalatencion')
+    {{-- modal add folio END --}}
+
+    {{-- modal turnar --}}
+    @include('modals.modalTurnar')
+    {{-- modal turnar END --}}
 </div>
+@endsection
 
-
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
+@section('contenidoJavaScript')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('assets/js/jqueryValidate/jquery.validate.js') }}"></script>
+<script src="{{ asset('assets/js/jqueryValidate/additional-methods.min.js') }}"></script>
+<script type="text/javascript">
+    // jquery
     var url = window.location.pathname;
     var id = url.substring(url.lastIndexOf('/') + 1);
     var areaTransferida = "";
 
-    function aceptar() {
-
-        event.preventDefault();
-        Swal.fire({
-            title: 'Se responderá esta solicitud como VALIDA, ¿Desea continuar?',
-            icon: 'warning',
-            imageWidth: 100,
-            imageHeight: 100,
-            imageAlt: 'Custom image',
-            showCancelButton: true,
-            cancelButtonColor: '#656665',
-            confirmButtonColor: '#611031',
-            confirmButtonText: 'Enviar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true,
-            html: `<textarea id="sugerencia" placeholder="Escriba alguna sugerencia (Opcional)" name="descripcion" rows="8" cols="20" class="form-control"></textarea>`,
-            focusConfirm: false,
-            preConfirm: () => {
-                const sugerencia = Swal.getPopup().querySelector('#sugerencia').value
-                return {
-                    sugerencia: sugerencia,
-                }
+    $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
             }
-        }).then((result) => {
-            let sugerencia = result.value.sugerencia;
-
-            $.ajax({
-                url: '/solicitud/aceptar/' + id,
-                type: 'post',
-                dataType: 'json',
-                data: {
-                    "sugerencia": sugerencia,
-                    '_token': '{{ csrf_token() }}',
+        });
+        $('#frmSeguimiento').validate({
+            errorClass: "error",
+            rules: {
+                descripcion: {
+                    required: true
                 },
-                success: function(response) {
+                archivoValidar: {
+                    extension: "jpg|jpeg|pdf|doc|docx|png"
+                }
+            },
+            messages:{
+                descripcion: {required: "La descripción es Requerida."},
+                archivoValidar: "La extensión que quiere cargar no es válida."
+            },
+            highlight: function(element, errorClass) {
+                $(element).addClass(errorClass);
+            },
+            submitHandler: function(form, event){
+                // manejamos el submiteo del formulario
+                event.preventDefault();
+                    const fd = new FormData($('#frmSeguimiento')[0]);
+                    let url = '{{ route("aceptarSolicitud", ":id") }}';
+                    url = url.replace(':id', id);
+                    $.ajax({
+                        url: url,
+                        method: "POST",
+                        dataType: 'json',
+                        processData: false,
+                        contentType: false,
+                        data: fd,
+                        beforeSend: function()
+                        {
+                            $('#formFactura').attr('disabled', 'disabled');
+                            $('.process').css('display', 'block');
+                            // modificamos el botón
+                            $('#addBillingItem').prop('disabled', true); // deshabilitar botón
+                            $("#submitForm").prop('disabled', true); // deshabilitar submit
+                            $("#submitForm")
+                                .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...');
+                        },
+                        success: function(data)
+                        {
+                           console.log(data);
+                           if (data.success == true) {
+                            // cierro modal
+                                $('#modalAtender').hide();
+                                setTimeout( function() { window.location.href = "{{ URL::to('bandejaEntrada')}}"; }, 1500 );
+                           } else {
+
+                           }
+                        //    $('#modalSuccess').modal('show'); // se abre el modal
+                        //     // manejando porcentaje
+                        //     let percentage = 0;
+                        //     const timer = setInterval(() => {
+                        //         percentage = percentage + 20;
+                        //         spinnerProgress(percentage, timer, data)
+                        //     }, 1000);
+                        },
+                        error: function(xhr, textStatus, error)
+                        {
+                            // manejar errores
+                            console.log(xhr.statusText);
+                            console.log(xhr.responseText);
+                            console.log(xhr.status);
+                            console.log(textStatus);
+                            console.log(error);
+                        }
+                    })
+            }
+        });
+
+    $('#unidades').on('change',async function(){
+       const idUnidad = this.value;
+       let URL = '{{ route("unidadOrgano", ":idUnidad") }}';
+       URL = URL.replace(':idUnidad', idUnidad);
+       const result = await $.get(URL)
+        .done(function(data, textStatus, jqXHR){
+            let opciones = '<option value="">Selecciona un Organo Administrativo</option>';
+            Object.values(data).forEach(val => {
+                opciones += '<option value="'+val.id+'">'+val.organo+'</option>';
+            });
+            document.getElementById('organos').innerHTML = opciones;
+        })
+        .fail(function( jqXHR, textStatus, errorThrown ){
+            console.log(jqXHR.statusText);
+            console.log(jqXHR.responseText);
+            console.log(jqXHR.status);
+            console.log(textStatus);
+            console.log(errorThrown);
+        });
+       return result;
+    });
+
+    $('#organos').on('change', async function(){
+        const idOrgano = this.value;
+        if (idOrgano.length > 0) {
+            let URL = '{{ route("usuarioDepartamento", ":idOrgano") }}';
+            URL = URL.replace(':idOrgano', idOrgano);
+            const response = await $.get(URL)
+                .done(function(data, textStatus, jqXHR){
+                    let deptos = '<option value="">Selecciona un Departamento</option>';
+                    Object.values(data).forEach(val => {
+                        deptos += '<option value="'+val.id+'">'+val.departamento+'</option>';
+                    });
+                    document.getElementById('deptos').innerHTML = deptos;
+                })
+                .fail(function(jqXHR, textStatus, errorThrown){
+                    console.log(jqXHR.statusText);
+                    console.log(jqXHR.responseText);
+                    console.log(jqXHR.status);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                });
+            return response;
+        }
+    });
+
+    $("#deptos").on('change', async function() {
+        const idDepto = this.value;
+        if (idDepto.length > 0) {
+            let URL = '{{ route("ServicioByDepto", ":idDepto") }}';
+            URL = URL.replace(':idDepto', idDepto);
+            const res = await $.get(URL)
+                .done(function(data, textStatus, jqXHR){
+                    let servicio = '<option value="">Selecciona un Servicio</option>';
+                    Object.values(data).forEach(val => {
+                        servicio += '<option value="'+val.idServicio+'">'+val.descripcion+'</option>';
+                    });
+                    document.getElementById('servicios').innerHTML = servicio;
+                })
+                .fail(function(jqXHR, textStatus, errorThrown){
+                    console.log(jqXHR.statusText);
+                    console.log(jqXHR.responseText);
+                    console.log(jqXHR.status);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                });
+            return res;
+        }
+    });
+
+    $('#transferirForm').validate({
+        errorClass: "error",
+        rules: {
+            unidades: { required: true },
+            organos: {required: true},
+            deptos: {required: true},
+            servicios: {required: true},
+            archivoReturnar: { extension: "jpg|jpeg|pdf|doc|docx|png" }
+        },
+        messages:{
+            unidades: {required: "La Unidad es Requerida."},
+            organos: {required: "El organo es Requerido"},
+            deptos: {required: "El departamento es requerido"},
+            servicios: {required: "El servicio es requerido"},
+            archivoReturnar: "La extensión que quiere cargar no es válida."
+        },
+        highlight: function(element, errorClass) {
+            $(element).addClass(errorClass);
+        },
+        submitHandler: function(form, event){
+            event.preventDefault();
+            const id = {{ $detallesServicio->id }};
+            const formData = new FormData($('#transferirForm')[0]);
+            let URL = '{{ route("transferirSolicitud", ":id") }}';
+            URL = URL.replace(':id', id);
+            $.ajax({
+                url: URL,
+                method: "POST",
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                data: formData,
+                beforeSend: function()
+                {
+                    $('#formFactura').attr('disabled', 'disabled');
+                    $('.process').css('display', 'block');
+                    // modificamos el botón
+                    $('#addBillingItem').prop('disabled', true); // deshabilitar botón
+                    $("#submitForm").prop('disabled', true); // deshabilitar submit
+                    $("#submitForm")
+                        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...');
+                },
+                success: function(response)
+                {
                     console.log(response);
-                    window.location = response.url
+                    if (response.success == true) {
+                    // cierro modal
+                        $('#turnadoModal').hide();
+                        setTimeout( function() { window.location = response.url; }, 1500 );
+                    } else {
+                        console.log('Mensaje de error del sistema');
+                    }
+                //    $('#modalSuccess').modal('show'); // se abre el modal
+                //     // manejando porcentaje
+                //     let percentage = 0;
+                //     const timer = setInterval(() => {
+                //         percentage = percentage + 20;
+                //         spinnerProgress(percentage, timer, data)
+                //     }, 1000);
+                },
+                error: function(xhr, textStatus, error)
+                {
+                    // manejar errores
+                    console.log(xhr.statusText);
+                    console.log(xhr.responseText);
+                    console.log(xhr.status);
+                    console.log(textStatus);
+                    console.log(error);
                 }
             });
-        })
-    }
+        }
+    });
 
     function rechazar() {
 
@@ -390,6 +523,8 @@
     function myNewFunction(sel) {
         areaTransferida = sel.options[sel.selectedIndex].text;
     }
+
+
 </script>
 
 @endsection

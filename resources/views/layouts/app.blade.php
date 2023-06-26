@@ -83,6 +83,8 @@
     <!-- alerts"(ocultar automaticamente pop up's)" -->
     <script src="{{ asset('argon') }}/js/alerts.js" defer></script>
     <script src="{{ asset('argon') }}/js/ranking.js" defer></script>
+    {{-- SECCIÓN DE CONTENIDO JAVASCRIPT --}}
+    @yield('contenidoJavaScript')
 
 </body>
 

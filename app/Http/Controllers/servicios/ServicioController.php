@@ -377,12 +377,16 @@ class ServicioController extends Controller
         $files = UrlArchivo::toBase()->where('idSolicitud', $id)->get();
         // dd($files);
         $unidadUsuario =  $datosUsuario->departamento;
-        $unidades = []; // Departamento2::with('servicios')->where([['estatus', '1'], ['idparent', '!=', '1'], ['area', '!=', 'Direccion General']])->get();
+         // Departamento2::with('servicios')->where([['estatus', '1'], ['idparent', '!=', '1'], ['area', '!=', 'Direccion General']])->get();
         $detallesServicio = SolicitudServicio::select(DB::raw('solicitudes.id,solicitudes.descripcion as detallesServicio,ds.departamento as departamentoSolicitante,dr.departamento as departamentoReceptor,solicitudes.estatusSolicitud,solicitudes.visto,solicitudes.lector,solicitudes.estatus,s2.descripcion as servicio, solicitudes.fechaAlta as fechaAltaa'))
         ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
         ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoSolicitante')
         ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
         ->where([['solicitudes.id', $id], ['solicitudes.estatus', '1']])->first();
+        /**
+         * obtener el organo
+         */
+        $unidades = Unidad::where('estatus', '1')->get();
 
         $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
         $fecha = Carbon::parse($detallesServicio->fechaAltaa);
@@ -591,6 +595,40 @@ class ServicioController extends Controller
 
         DB::beginTransaction();
         try {
+            // checamos las extensiones validas - 22 Junio 2023 DMC
+            $extensionesValidas = ['pdf', 'jpg', 'jpeg', 'xls', 'docx'];
+            /**
+             * primeramente vamos a checar que haya un archivo nuevo
+             */
+            if ($request->hasFile('archivoValidar')) {
+                #si es verdadero
+                # si existe un archivo empezamos a iterar en este momento
+                $archivo = $request->file('archivoValidar');
+                if (in_array($archivo->extension(), $extensionesValidas)) {
+                    # si no se encuentra en el arreglo pasamos la condicional...
+                    $nombreArchivo = $id.'_'.time().'.'.$archivo->extension();
+                    $filePath = $archivo->storeAs('atencion', $nombreArchivo, 'public'); // hacemos el movimiento de guardar el archivo
+                    // cargando archivo en la base de datos
+                    UrlArchivo::create([
+                        'idSolicitud' => $id,
+                        'tipoArchivo' => 'atendido',
+                        'urlArchivo' => '/storage/'.$filePath,
+                        'nombreArchivo' => $nombreArchivo,
+                        'estatus' => 1,
+                        'idUsuarioAlta' => Auth::id(),
+                        'fechaUMod' => null
+                    ]);
+
+                } else {
+                    #no se encuentra  en la extensión.
+                    $wrongArray = [
+                        'success' => false,
+                        'message' => 'No se pudo cargar el archivo intentalo nuevamente',
+                        'data' => 'ERROR'
+                    ];
+                    return response()->json($wrongArray, 500);
+                }
+            }
 
             DB::table('solicitudes')
                 ->where('id', $id)
@@ -697,6 +735,13 @@ class ServicioController extends Controller
             DB::commit();
             session(['message' => 'Se ha enviado la respuesta correctamente']);
             session(['alert' => 'alert-success']);
+            // enviar respuesta al ajax desde el servidor
+            $doneArray = [
+                'success' => true,
+                'message' => 'Se ha dado atención a la solicitud correctamente',
+                'data' => 'OK'
+            ];
+            return response()->json($doneArray, 200);
         } catch (\Exception $e) {
             DB::rollback();
             throw $e;
@@ -893,33 +938,25 @@ class ServicioController extends Controller
     public function transferirSolicitud(Request $request, $id)
     {
 
-
         $request->validate([
-            'servicio' => 'required',
             'descripcionTransferencia' => 'required'
         ]);
 
 
-        $idServicio = preg_split('#-#', $request->servicio)[0];
-        $idDepartamentoReceptora = preg_split('#-#', $request->servicio)[1];
+        $idServicio = $request->servicios;
+        $newIdDepartamentoReceptora = $request->deptos;
+        // $idDepartamentoReceptora = preg_split('#-#', $request->servicio)[1];
         DB::beginTransaction();
 
-        $files = [
-            $request->file('archivo') ?? null,
-        ];
-
-        $files = array_filter($files, function ($a) {
-            return trim($a) !== "";
-        });
-
         try {
-            $destino = 'files/archivosservicios';
+            $validExtensions = ['pdf', 'jpg', 'jpeg', 'xls', 'xlsx', 'docx'];
+            // $destino = 'files/archivosservicios';
             $idAntiguoDepartamentoAtencion = DB::table('solicitudes')->where('id', $id)->first()->idDepartamentoReceptora;
             DB::table('solicitudes')
                 ->where('id', $id)
                 ->update([
                     'idServicio' => $idServicio,
-                    'idDepartamentoReceptora' => $idDepartamentoReceptora,
+                    'idDepartamentoReceptora' => $newIdDepartamentoReceptora,
                     'estatusSolicitud' => 'Turnado',
                     'lector' => 'receptor',
                     'visto' => 0,
@@ -927,52 +964,75 @@ class ServicioController extends Controller
                     'fechaUMod' => Carbon::now()
                 ]);
 
+            /**
+             * primeramente vamos a checar que haya un archivo nuevo
+             */
+            if ($request->hasFile('archivoReturnar')) {
+                #si es verdadero
+                # si existe un archivo empezamos a iterar en este momento
+                $archivoReturnar = $request->file('archivoReturnar');
+                if (in_array($archivoReturnar->extension(), $validExtensions)) {
+                    # si no se encuentra en el arreglo pasamos la condicional...
+                    $fileName = $id.'_'.time().'.'.$archivoReturnar->extension();
+                    $filePath = $archivoReturnar->storeAs('transferir', $fileName, 'public'); // hacemos el movimiento de guardar el archivo
+                    // cargando archivo en la base de datos
+                    UrlArchivo::create([
+                        'idSolicitud' => $id,
+                        'tipoArchivo' => 'atendido',
+                        'urlArchivo' => '/storage/'.$filePath,
+                        'nombreArchivo' => $fileName,
+                        'estatus' => 1,
+                        'idUsuarioAlta' => Auth::id(),
+                        'fechaUMod' => null
+                    ]);
 
-            foreach ($files as $file) {
-                $nombre = $file->getClientOriginalName();
-                $archivo =  UrlArchivo::create([
-                    'idSolicitud' => $id,
-                    'tipoArchivo' => 'adjunto',
-                    'urlArchivo' => $file->move(public_path($destino), $nombre),
-                    'nombreArchivo' => $nombre,
-                    'estatus' => 1,
-                    'idUsuarioAlta' => Auth::id(),
-                    'fechaUMod' => null
-                ]);
+                } else {
+                    #no se encuentra  en la extensión.
+                    $wrongArray = [
+                        'success' => false,
+                        'message' => 'No se pudo cargar el archivo intentalo nuevamente',
+                        'data' => 'ERROR'
+                    ];
+                    return response()->json($wrongArray, 500);
+                }
             }
 
-            $his = HistorialServicios::create([
+
+            HistorialServicios::create([
                 'idSolicitud' => $id,
-                'idDepartamentoReceptora' => $idDepartamentoReceptora,
+                'idServicio' => $idServicio,
+                'idDepartamentoReceptora' => $newIdDepartamentoReceptora,
                 'estatusSolicitud' => 'Turnado',
                 'estatus' => 1,
                 'idUsuarioAlta' => Auth::id(),
+                'motivo' => $request->descripcionTransferencia,
+                'descripcion' => ''
             ]);
-            $his->motivo = $request->descripcionTransferencia . '' ?? 'N/A'; //no guarda el campo motivo en el create :( AIUDA NO SE POR QUE, AQUI SI FUNCIONA
-            $his->save();
+            // $his->motivo = $request->descripcionTransferencia . '' ?? 'N/A'; //no guarda el campo motivo en el create :( AIUDA NO SE POR QUE, AQUI SI FUNCIONA
+            // $his->save();
 
 
             $solicitud = SolicitudServicio::where('id', $id)->first();
             $servicio = Servicios::where('idServicio', $solicitud->idServicio)->first()->descripcion;
 
             //jefe de departamento al que se le enviara la notificacion de solicitud transferida
-            $usuario = User::where([['idOrganoDepartamento', $solicitud->idDepartamentoSolicitante],['idRol','3']])->first();
+            $usuario = User::where([['idOrganoDepartamento', $newIdDepartamentoReceptora],['idRol','3']])->first();
 
 
             $departamentoSolicitante =Departamento::with('organo')->where('id', $solicitud->idDepartamentoSolicitante)->first();
             $departamentoAtencion =Departamento::with('organo')->where('id', $idAntiguoDepartamentoAtencion)->first();
 
 
-            $departamentoAtencionTurnado = Departamento::with('organo')->where('id', $idDepartamentoReceptora)->first();
+            $departamentoAtencionTurnado = Departamento::with('organo')->where('id', $newIdDepartamentoReceptora)->first();
             $usuarioTransferido = User::where([['idOrganoDepartamento', $departamentoAtencionTurnado->id],['idRol','3']])->first();
 
             // $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
             // $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
 
-            $infoDirectorSolicitante = User::with('organo')->where([['idDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
-            $infoDirectorAtencion = User::with('organo')->where([['idDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
-            $infoDirectorSolicitudTurnado = User::with('organo')->where([['idDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
-            $infoDirectorAtencionTurnado = User::with('organo')->where([['idDepartamento', $departamentoAtencionTurnado->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
+            $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
+            $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
+            $infoDirectorSolicitudTurnado = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
+            $infoDirectorAtencionTurnado = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencionTurnado->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
             // dump($infoDirectorSolicitante->toArray(), $infoDirectorAtencion->toArray());
 
             $contenido = [
@@ -1073,6 +1133,15 @@ class ServicioController extends Controller
 
             session(['message' => 'Se ha enviado la respuesta correctamente']);
             session(['alert' => 'alert-success']);
+
+            $doneArray = [
+                'success' => true,
+                'message' => 'Se ha dado atención a la solicitud correctamente',
+                'data' => 'OK',
+                'url' => url('/recibidos')
+            ];
+            return response()->json($doneArray, 200);
+
         } catch (\Exception $e) {
             DB::rollback();
             throw $e;
@@ -1080,7 +1149,7 @@ class ServicioController extends Controller
             session(['alert' => 'alert-danger']);
         }
 
-        return redirect()->route('bandejaEntrada');
+        // return redirect()->route('bandejaEntrada');
     }
 
 

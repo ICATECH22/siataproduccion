@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class OrganoController extends Controller
 {
@@ -61,7 +62,7 @@ class OrganoController extends Controller
             DB::commit();
             session(['message' => 'El registro se ha guardado']);
             session(['alert' => 'alert-success']);
-        } catch (\Exception $e) {
+        } catch (QueryException $e) {
             throw $e;
             DB::rollback();
             session(['message' => 'Algo salió mal intente nuevamente']);

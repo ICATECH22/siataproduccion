@@ -170,4 +170,15 @@ class CatalogoUnidadController extends Controller
         ->get();
         return response()->json($departamentos);
     }
+
+    public function getServiciosSerachByDepto($idDepto){
+        $servicios = DB::table('departamentoservicios')
+        ->join('departamento', 'departamentoservicios.idDepartamento', '=', 'departamento.id')
+        ->join('servicios', 'departamentoservicios.idServicio', '=', 'servicios.idServicio')
+        ->select('servicios.idServicio', 'servicios.descripcion')
+        ->where('departamentoservicios.idDepartamento', '=', $idDepto)
+        ->get();
+
+        return response()->json($servicios);
+    }
 }

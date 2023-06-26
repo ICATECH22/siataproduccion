@@ -11,7 +11,7 @@
                     <div class="row align-items-center">
                         <div class="col">
                             <h6 class="text-uppercase text-light ls-1 mb-1">General</h6>
-                            <h2 class="text-white mb-0">Numero de atenciones recibidas en 2022</h2>
+                            <h2 class="text-white mb-0">Numero de atenciones recibidas en {{ date('Y') }}</h2>
                         </div>
                     </div>
                 </div>
@@ -119,7 +119,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
+
                         </tbody>
                         <!-- <tbody>
                             <tr>
@@ -219,7 +219,7 @@
         </div>
     </div>
 
-    
+
 </div>
 @endsection
 

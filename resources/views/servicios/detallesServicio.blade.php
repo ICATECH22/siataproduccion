@@ -173,41 +173,69 @@
                                             </div>
                                         </div>
 
-                                        @if($infoAdicionalSolicitud->estatusSolicitud != 'Pendiente')
-                                        <div class="sender-details">
-
-                                            <div class="details">
-                                                <p class="sender-email">
-                                                    Respuesta enviado el : {{$infoAdicionalSolicitud->fechaAlta}}
-                                                </p>
-                                                <p class="msg-subject">
-                                                    Observaciones: {{$infoAdicionalSolicitud->motivo}}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        @endif
-
                                         <div class="message-content">
-                                            <p>{{$detallesServicio->departamentoSolicitante??'nombre del departamento solicitante'}} Escribio: </p>
+                                            <p>
+                                                {{$detallesServicio->departamentoSolicitante ?? 'nombre del departamento solicitante'}}
+                                                Escribió:
+                                            </p>
 
                                             {{$detallesServicio->detallesServicio??'aqui va los detalles del serivicio'}}
                                         </div>
+
+                                        @if($infoAdicionalSolicitud->estatusSolicitud != 'Pendiente')
+                                            <div class="sender-details">
+
+                                                <div class="details">
+                                                    <p class="sender-email">
+                                                        Respuesta enviado el : {{$infoAdicionalSolicitud->fechaAlta}}
+                                                    </p>
+                                                    <p class="msg-subject">
+                                                        Observaciones: {{$infoAdicionalSolicitud->motivo}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        @endif
+
                                         <div class="attachments-sections">
                                             <ul>
-                                                @foreach($files as $file)
-                                                <li>
-                                                    <div class="thumb"><i class="mdi mdi-file-image"></i></div>
-                                                    <div class="details">
-                                                        <p class="file-name">{{$file->nombreArchivo}}</p>
-                                                        <div class="buttons">
-                                                            <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
-                                                            <a href="{{ route('descargarArchivo',$file->id) }}" class="download">Descargar</a>
+                                                <p class="msg-subject">
+                                                    Archivos adjuntos:
+                                                </p>
+                                                <div class="form-row">
+                                                    @foreach($files as $file)
+                                                    @php
+                                                        $info = pathinfo(storage_path().$file->urlArchivo);
+                                                        $ext = $info['extension'];
+                                                    @endphp
+                                                    <div class="col-sm-3">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title"><div class="thumb"><i class="mdi mdi-file-image"></i></div> {{$file->nombreArchivo}}</h5>
+                                                                @if ($file->tipoArchivo == 'atendido')
+                                                                    <h6 class="card-subtitle mb-2 text-muted">Archivo de Seguimiento</h6>
+                                                                @else
+                                                                    <h6 class="card-subtitle mb-2 text-muted">Archivo de Solicitud</h6>
+                                                                @endif
+                                                                @switch($ext)
+                                                                    @case('pdf')
+                                                                        <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
+                                                                        @break
+                                                                    @case('jpeg')
+                                                                        <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
+                                                                        @break
+                                                                    @case('jpg')
+                                                                        <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
+                                                                        @break
+                                                                    @default
+
+                                                                @endswitch
+                                                                <a href="{{ route('descargarArchivo',$file->id) }}" class="download">Descargar</a>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </li>
-                                                <br>
+                                                    <br>
                                                 @endforeach
-
+                                                </div>
                                             </ul>
                                         </div>
 

@@ -156,7 +156,7 @@
                                     </div>
                                     <div class="message-body">
                                         <div class="sender-details">
-                                            <img class="img-sm rounded-circle mr-3" src="{{ asset('argon') }}/img/icons/common/prueba.svg" alt="">
+                                            <img class="img-sm rounded-circle mr-3" src="{{ asset('argon') }}/img/icons/common/archivo.svg" alt="">
                                             <div class="details">
                                                 <p class="msg-subject">
                                                     Asunto: {{$detallesServicio->servicio}} - {{$detallesServicio->departamentoReceptor}}

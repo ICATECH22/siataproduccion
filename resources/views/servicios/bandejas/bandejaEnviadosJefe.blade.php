@@ -8,7 +8,7 @@
                 </tr>
             </thead>
 
-            
+
             <tbody>
                 @foreach($enviados as $solicitud)
                 <tr>
@@ -54,7 +54,7 @@
     $(document).ready(function() {
         new DataTable('#tablaSolicitudesEnviados2', {
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
             },
         });
     });

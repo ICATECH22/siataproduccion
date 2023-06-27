@@ -187,11 +187,11 @@
                                         </div>
                                         @endif
 
-                                        {{-- <div class="message-content">
+                                        <div class="message-content">
                                             <p>{{$detallesServicio->departamentoSolicitante??'nombre del departamento solicitante'}} Escribio: </p>
 
-                                            {{$detallesServicio->detalles??'aqui va los detalles del serivicio'}}
-                                        </div> --}}
+                                            {{$detallesServicio->detallesServicio??'aqui va los detalles del serivicio'}}
+                                        </div>
                                         <div class="attachments-sections">
                                             <ul>
                                                 @foreach($files as $file)

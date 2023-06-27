@@ -378,19 +378,18 @@ class ServicioController extends Controller
         // dd($files);
         $unidadUsuario =  $datosUsuario->departamento;
          // Departamento2::with('servicios')->where([['estatus', '1'], ['idparent', '!=', '1'], ['area', '!=', 'Direccion General']])->get();
-        $detallesServicio = SolicitudServicio::select(DB::raw(
-            'solicitudes.id,
-            solicitudes.descripcion AS detallesServicio,
-            deptoSolicitante.departamento AS departamentoSolicitante,
-            deptoReceptor.departamento AS departamentoReceptor,
-            solicitudes.estatusSolicitud,
-            solicitudes.visto,
-            solicitudes.lector,
-            solicitudes.estatus,
-            s2.descripcion as servicio,
-            solicitudes.fechaAlta as fechaAltaa'))
-        ->join('departamento AS deptoSolicitante', 'deptoSolicitante.id', '=', 'solicitudes.idDepartamentoSolicitante')
-        ->leftjoin('departamento AS deptoReceptor', 'deptoReceptor.id', '=', 'solicitudes.idDepartamentoReceptora')
+        $detallesServicio = SolicitudServicio::select('solicitudes.id',
+        'solicitudes.descripcion AS detallesServicio',
+        'deptoSolicitante.departamento AS departamentoSolicitante',
+        'deptoReceptor.departamento AS departamentoReceptor',
+        'solicitudes.estatusSolicitud',
+        'solicitudes.visto',
+        'solicitudes.lector',
+        'solicitudes.estatus',
+        's2.descripcion as servicio',
+        'solicitudes.fechaAlta as fechaAltaa')
+        ->join('departamento as deptoSolicitante', 'solicitudes.idDepartamentoSolicitante', '=', 'deptoSolicitante.id')
+        ->join('departamento as deptoReceptor', 'solicitudes.idDepartamentoReceptora', '=', 'deptoReceptor.id' )
         ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
         ->where([['solicitudes.id', $id], ['solicitudes.estatus', '1']])->first();
         /**

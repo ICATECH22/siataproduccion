@@ -392,6 +392,7 @@ class ServicioController extends Controller
         ->join('departamento as deptoReceptor', 'solicitudes.idDepartamentoReceptora', '=', 'deptoReceptor.id' )
         ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
         ->where([['solicitudes.id', $id], ['solicitudes.estatus', '1']])->first();
+        dd($detallesServicio);
         /**
          * obtener el organo
          */

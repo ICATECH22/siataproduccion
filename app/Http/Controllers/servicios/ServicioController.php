@@ -392,7 +392,6 @@ class ServicioController extends Controller
         ->join('departamento as deptoReceptor', 'solicitudes.idDepartamentoReceptora', '=', 'deptoReceptor.id' )
         ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
         ->where([['solicitudes.id', $id], ['solicitudes.estatus', '1']])->first();
-        dd($detallesServicio);
         /**
          * obtener el organo
          */
@@ -423,7 +422,7 @@ class ServicioController extends Controller
         $unidades = Unidad::toBase()->where('estatus', 1)->get();
         $detallesServicio = SolicitudServicio::select(DB::raw('solicitudes.id,solicitudes.descripcion as detallesServicio,ds.departamento as departamentoSolicitante,dr.departamento as departamentoReceptor,solicitudes.estatusSolicitud,solicitudes.visto,solicitudes.lector,solicitudes.estatus,s2.descripcion as servicio,date_format(solicitudes.fechaAlta, "%D-%M-%Y") as fechaAltaa'))
             ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
-            ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoSolicitante')
+            ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoReceptora')
             ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
             ->where([['solicitudes.id', $id], ['solicitudes.estatus', '1']])->first();
 

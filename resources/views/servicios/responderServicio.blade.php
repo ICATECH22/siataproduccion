@@ -237,7 +237,7 @@
                            if (data.success == true) {
                             // cierro modal
                                 $('#modalAtender').hide();
-                                setTimeout( function() { window.location.href = "{{ URL::to('bandejaEntrada')}}"; }, 1500 );
+                                setTimeout( function() { window.location = data.url; }, 1500 );
                            } else {
 
                            }

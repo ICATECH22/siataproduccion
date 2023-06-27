@@ -662,7 +662,7 @@ class ServicioController extends Controller
                 'idServicio' => $servicio->idServicio,
                 'descripcion' => '',
                 'estatusSolicitud' => 'Atendido', //Atendido
-                'motivo' => $request->sugerencia ?? null,
+                'motivo' => $request->descripcion ?? null,
                 'estatus' => 1,
                 'idUsuarioAlta' => Auth::id(),
                 'fechaUMod' => null
@@ -708,7 +708,7 @@ class ServicioController extends Controller
                     $letter = [
                         'titulo' => $notificacion['titulo'],
                         'servicio' => $servicio,
-                        'detalles' => $request->sugerencia ?? '',
+                        'detalles' => $request->descripcion ?? '',
                         'url' => '/siata/detalles/' . $id,
                     ];
                     $letter = json_encode($letter);
@@ -739,7 +739,8 @@ class ServicioController extends Controller
             $doneArray = [
                 'success' => true,
                 'message' => 'Se ha dado atención a la solicitud correctamente',
-                'data' => 'OK'
+                'data' => 'OK',
+                'url' => url('/recibidos')
             ];
             return response()->json($doneArray, 200);
         } catch (\Exception $e) {
@@ -749,7 +750,7 @@ class ServicioController extends Controller
             session(['alert' => 'alert-danger']);
         }
 
-        return response()->json(['url' => url('/recibidos')]);
+        // return response()->json(['url' => url('/recibidos')]);
     }
 
 

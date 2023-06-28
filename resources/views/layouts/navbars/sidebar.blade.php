@@ -6,7 +6,7 @@
         </button>
         <!-- Brand -->
         <a class="navbar-brand pt-0" href="{{ route('home') }}">
-            <img src="{{ asset('argon') }}/img/brand/icatechlogo.png" class="navbar-brand-img" alt="...">
+            <img src="{{ asset('argon/img/brand/icatechlogo.png') }}" class="navbar-brand-img" alt="...">
         </a>
         <!-- User -->
         <ul class="nav align-items-center d-md-none">
@@ -24,7 +24,7 @@
                     </div>
                     <a href="{{ route('profile.edit') }}" class="dropdown-item">
                         <i class="ni ni-single-02"></i>
-                        <span>{{ __('My profile') }}</span>
+                        <span>{{ __('Mi Perfil') }}</span>
 
                     </a>
 
@@ -32,7 +32,7 @@
                     <a href="{{ route('logout') }}" class="dropdown-item" onclick="event.preventDefault();
                     document.getElementById('logout-form').submit();">
                         <i class="ni ni-user-run"></i>
-                        <span>{{ __('Logout') }}</span>
+                        <span>{{ __('Salir') }}</span>
                     </a>
                 </div>
             </li>
@@ -96,10 +96,10 @@
                     </div>
                 </li>
 
-             
+
 
             </ul>
-            
+
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('catalogosLista') }}">
@@ -132,8 +132,8 @@
                 </li>
             </ul>
             @endif
-           
-            
+
+
 
         </div>
     </div>

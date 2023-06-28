@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => __('User Profile')])
+@extends('layouts.app', ['title' => __('Catálogos')])
 
 @section('content')
 
@@ -45,6 +45,9 @@
         </table>
     </div>
 </div>
+
+@endsection
+@section('contenidoJavaScript')
 <script>
     $(document).ready(function() {
         $('#myTable').DataTable({
@@ -54,10 +57,9 @@
                 [0, 'asc']
             ],
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
             }
         });
     });
 </script>
-
 @endsection

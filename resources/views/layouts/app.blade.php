@@ -9,7 +9,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Sistema de asistencia tecnica</title>
+    <title>{{ (isset($title)) ? $title : 'Sistema de asistencia tecnica' }}</title>
     <!-- Favicon -->
     <link href="{{ asset('argon') }}/img/brand/favicon.png" rel="icon" type="image/png">
     <!-- Fonts -->
@@ -65,8 +65,8 @@
     @endguest
 
 
-    <script src="{{ asset('argon') }}/vendor/jquery/dist/jquery.min.js"></script>
-    <script src="{{ asset('argon') }}/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('argon/vendor/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ asset('argon/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
 
     @stack('js')
 
@@ -82,8 +82,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- alerts"(ocultar automaticamente pop up's)" -->
-    <script src="{{ asset('argon') }}/js/alerts.js" defer></script>
-    <script src="{{ asset('argon') }}/js/ranking.js" defer></script>
+    <script src="{{ asset('argon/js/alerts.js') }}" defer></script>
+    <script src="{{ asset('argon/js/ranking.js') }}" defer></script>
     {{-- SECCIÓN DE CONTENIDO JAVASCRIPT --}}
     @yield('contenidoJavaScript')
 

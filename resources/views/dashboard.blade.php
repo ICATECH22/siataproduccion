@@ -53,7 +53,7 @@
                             <h3 class="mb-0">Servicios mas solicitados</h3>
                         </div>
                         <div class="col text-right">
-                            <a href="#" class="btn btn-sm btn-primary">See all</a>
+                            <a href="#" class="btn btn-sm btn-primary">Mirar Todo</a>
                         </div>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                             <h3 class="mb-0">Unidades con mejor tiempo de respuesta</h3>
                         </div>
                         <div class="col text-right">
-                            <a href="#!" class="btn btn-sm btn-primary">See all</a>
+                            <a href="#!" class="btn btn-sm btn-primary">Mirar Todo</a>
                         </div>
                     </div>
                 </div>
@@ -223,7 +223,7 @@
 </div>
 @endsection
 
-@push('js')
-<script src="{{ asset('argon') }}/vendor/chart.js/dist/Chart.min.js"></script>
-<script src="{{ asset('argon') }}/vendor/chart.js/dist/Chart.extension.js"></script>
-@endpush
+@section('contenidoJavaScript')
+    <script src="{{ asset('argon/vendor/chart.js/dist/Chart.min.js') }}"></script>
+    <script src="{{ asset('argon/vendor/chart.js/dist/Chart.extension.js') }}"></script>
+@endsection

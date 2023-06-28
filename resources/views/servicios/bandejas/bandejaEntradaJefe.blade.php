@@ -1,5 +1,4 @@
 <br>
-
 <inbox>
     <inbox-list>
 
@@ -26,13 +25,13 @@
                                         <span class="subject">De: {{$solicitud->departamentoSolicitante}}</span>
                                         <span class="from">
                                             Solicita: {{$solicitud->servicio}} &nbsp; Estatus:@if($solicitud->estatusSolicitud == 'Pendiente')
-                                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-default">{{$solicitud->estatusSolicitud }} </a>
+                                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-default"><i class="fas fa-pause"></i> {{$solicitud->estatusSolicitud }} </a>
                                             @elseif($solicitud->estatusSolicitud == 'Rechazado')
-                                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-danger">{{$solicitud->estatusSolicitud }} </a>
+                                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-danger"><i class="fas fa-ban"></i> {{$solicitud->estatusSolicitud }} </a>
                                             @elseif($solicitud->estatusSolicitud == 'Atendido')
-                                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-success">{{$solicitud->estatusSolicitud }} </a>
+                                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-success"> <i class="fas fa-check"></i> {{$solicitud->estatusSolicitud }} </a>
                                             @elseif($solicitud->estatusSolicitud == 'Turnado')
-                                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-warning">{{$solicitud->estatusSolicitud }} </a>
+                                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-warning"><i class="fas fa-undo-alt"></i> {{$solicitud->estatusSolicitud }} </a>
                                             @endif
                                         </span>
                                     </div>
@@ -55,8 +54,9 @@
 <script type="text/javascript">
     $(document).ready(function() {
         new DataTable('#tablaSolicitudesEnviados', {
+            ordering: false, //disable ordering datatable
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
             },
         });
     });

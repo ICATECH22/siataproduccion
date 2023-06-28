@@ -78,9 +78,9 @@
 
                                 <br>
                                 @if($director)
-                                @include('servicios.bandejas.bandejaEntradaDirector')
+                                    @include('servicios.bandejas.bandejaEntradaDirector')
                                 @else
-                                @include('servicios.bandejas.bandejaEntradaJefe')
+                                    @include('servicios.bandejas.bandejaEntradaJefe')
                                 @endif
                             </main>
                         </div>
@@ -91,12 +91,9 @@
 
     </div>
 </div>
-
-
-
+@endsection
+@section('contenidoJavaScript')
 <script type="text/javascript">
-    
-
     function filtar(filtro) {
 
         var target = '.solicitud';

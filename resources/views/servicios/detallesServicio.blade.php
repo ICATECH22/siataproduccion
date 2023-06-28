@@ -21,13 +21,13 @@
                         <h3 style="margin-left: 20px;" class="mb-0">&nbsp;&nbsp;|&nbsp;&nbsp;ESTATUS&nbsp;&nbsp;|</h3>
                         <h3 style="margin-left: 20px;" class="mb-0">
                             @if($detallesServicio->estatusSolicitud == 'Pendiente')
-                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-default">{{$detallesServicio->estatusSolicitud }} </a>
+                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-default"><i class="fas fa-pause"></i> {{$detallesServicio->estatusSolicitud }} </a>
                             @elseif($detallesServicio->estatusSolicitud == 'Rechazado')
-                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-danger">{{$detallesServicio->estatusSolicitud }} </a>
+                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-danger"><i class="fas fa-ban"></i> {{$detallesServicio->estatusSolicitud }} </a>
                             @elseif($detallesServicio->estatusSolicitud == 'Atendido')
-                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-success">{{$detallesServicio->estatusSolicitud }} </a>
+                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-success"><i class="fas fa-check"></i> {{$detallesServicio->estatusSolicitud }} </a>
                             @elseif($detallesServicio->estatusSolicitud == 'Turnado')
-                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-warning">Se ha {{$detallesServicio->estatusSolicitud }} al departamento: {{$detallesServicio->departamentoReceptor}} </a>
+                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-warning"><i class="fas fa-undo-alt"></i> Se ha {{$detallesServicio->estatusSolicitud }} a  {{$detallesServicio->departamentoReceptor}} </a>
                             @endif
 
                         </h3>
@@ -170,16 +170,12 @@
                                                 <p class="sender-email">
                                                     Enviado el: {{$fechaEnvio}}
                                                 </p>
+                                                <p>
+                                                    {{$detallesServicio->departamentoSolicitante ?? 'nombre del departamento solicitante'}}
+                                                    Escribió:
+                                                    <b>{{$detallesServicio->detallesServicio??'aqui va los detalles del serivicio'}}</b>
+                                                </p>
                                             </div>
-                                        </div>
-
-                                        <div class="message-content">
-                                            <p>
-                                                {{$detallesServicio->departamentoSolicitante ?? 'nombre del departamento solicitante'}}
-                                                Escribió:
-                                            </p>
-
-                                            {{$detallesServicio->detallesServicio??'aqui va los detalles del serivicio'}}
                                         </div>
 
                                         @if($infoAdicionalSolicitud->estatusSolicitud != 'Pendiente')

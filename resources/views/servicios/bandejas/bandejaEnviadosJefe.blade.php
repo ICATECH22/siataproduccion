@@ -53,6 +53,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         new DataTable('#tablaSolicitudesEnviados2', {
+            ordering: false, //disable ordering datatable
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
             },
@@ -60,7 +61,6 @@
     });
 
     function detallesAtencion(idSolicitud) {
-
 
         window.location = 'recibidos/detalles/' + idSolicitud;
     }

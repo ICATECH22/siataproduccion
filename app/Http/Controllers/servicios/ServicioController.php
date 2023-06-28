@@ -55,11 +55,11 @@ class ServicioController extends Controller
             //Departamento2::toBase()->where([['idparent', $unidadUsuario->idArea], ['estatus', 1]])->orWhere('id', $unidadUsuario->idArea)->get(); //obtiene las areas de la direccion
 
             foreach ($departamentosDirector as $departamento) {
-                $recibidosAux = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus')
+                $recibidosAux = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus', 'solicitudes.fechaAlta')
                 ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
                 ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoReceptora')
                 ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
-                ->where([['dr.id', $usuario->idOrganoDepartamento], ['solicitudes.estatus', '1']])->get();
+                ->where([['dr.id', $usuario->idOrganoDepartamento], ['solicitudes.estatus', '1']])->orderBy('solicitudes.fechaAlta', 'DESC')->get();
                 // SolicitudServicio::toBase()->where([['idDepartamentoSolicitante',$departamento->idDepartamento], ['estatus',1]])->get(); //obtiene las solicitudes de cada departamento
 
                 foreach ($recibidosAux as $recibido) { //itera cada solicitud de una area
@@ -73,11 +73,11 @@ class ServicioController extends Controller
             }
             // dump($departamentosDirector->toArray());
         } else { //si es jefe (ej: Ing. Alejandro) obtiene solamente las solicitudes enviadas de su departamento (ej: area de informatica)
-            $recibidos = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus')
+            $recibidos = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus', 'solicitudes.fechaAlta')
                 ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
                 ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoReceptora')
                 ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
-                ->where([['dr.id', $usuario->idOrganoDepartamento], ['solicitudes.estatus', '1']])->get();
+                ->where([['dr.id', $usuario->idOrganoDepartamento], ['solicitudes.estatus', '1']])->orderBy('solicitudes.fechaAlta', 'DESC')->get();
             foreach ($recibidos as $recibido) {
                 if ($recibido->estatusSolicitud != 'Pendiente') {
                     $historial = HistorialServicios::toBase()->where('idSolicitud', $recibido->id)->orderBy('id', 'DESC')->first();
@@ -89,12 +89,6 @@ class ServicioController extends Controller
 
         // dd($recibidos->toArray());
 
-
-        // dd($departamentosDirector->toArray());
-
-
-        // dump($recibidos);
-        // dd($recibidos, $unidadUsuario);
         return view('servicios.bandejaEntrada', compact('recibidos', 'usuario', 'director', 'departamentosDirector'));
     }
 
@@ -118,19 +112,19 @@ class ServicioController extends Controller
 
             foreach ($departamentosDirector as $departamento) {
 
-                $enviadosAux = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus')
+                $enviadosAux = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus', 'solicitudes.fechaAlta')
                 ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
                 ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoReceptora')
                 ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
-                ->where([['ds.id', $departamento->idDepartamento], ['solicitudes.estatus', '1']])->get(); //obtiene las solicitudes de cada area
+                ->where([['ds.id', $departamento->idDepartamento], ['solicitudes.estatus', '1']])->orderBy('solicitudes.fechaAlta', 'DESC')->get(); //obtiene las solicitudes de cada area
                 $departamento->enviados = $enviadosAux; // agrega las solicitudes al array de cada area de la direccion
             }
         } else { //si es jefe (ej: Ing. Alejandro) obtiene solamente las solicitudes enviadas de su departamento (ej: area de informatica)
-            $enviados = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus')
+            $enviados = SolicitudServicio::select('solicitudes.id', 'solicitudes.descripcion as detallesServicio', 'ds.departamento as departamentoSolicitante', 'dr.departamento as departamentoReceptora', 'solicitudes.estatusSolicitud', 'solicitudes.visto', 'solicitudes.lector', 'solicitudes.estatus', 'solicitudes.fechaAlta')
                 ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
                 ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoReceptora')
                 ->join('servicios as s2', 's2.idServicio', '=', 'solicitudes.idServicio')
-                ->where([['ds.id', $usuario->idOrganoDepartamento], ['solicitudes.estatus', '1']])->get();
+                ->where([['ds.id', $usuario->idOrganoDepartamento], ['solicitudes.estatus', '1']])->orderBy('solicitudes.fechaAlta', 'DESC')->get();
         }
 
         // dd($enviados->toArray());
@@ -461,10 +455,6 @@ class ServicioController extends Controller
             }
         }
 
-        // dump($infoAdicionalSolicitud);
-        // dump($files);
-        // dd($unidadUsuario,$detallesServicio);
-        // return Response()->download('../public/'.$detallesServicio->urlArchivo);
         return view('servicios.detallesServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'unidades', 'unidadUsuario', 'fechaEnvio'));
     }
 

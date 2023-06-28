@@ -43,15 +43,12 @@
 
                             <main class="inbox">
                                 <div class="toolbar">
-
                                     <br>
                                     @if($director)
-                                    @include('servicios.bandejas.bandejaEnviadosDirector')
+                                        @include('servicios.bandejas.bandejaEnviadosDirector')
                                     @else
-                                    @include('servicios.bandejas.bandejaEnviadosJefe')
+                                        @include('servicios.bandejas.bandejaEnviadosJefe')
                                     @endif
-
-
                             </main>
                         </div>
                     </div>
@@ -62,6 +59,8 @@
 
     </div>
 </div>
+@endsection
+@section('contenidoJavaScript')
 <script type="text/javascript">
     function verAtencion(idSolicitud) {
         window.location = 'enviados/detalles/' + idSolicitud;

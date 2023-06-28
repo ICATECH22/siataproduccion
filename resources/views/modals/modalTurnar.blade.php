@@ -69,7 +69,7 @@
                     @enderror
                 </div>
             </div>
-            <button type="submit" class="btn btn-success">Re-turnar</button>
+            <button type="submit" class="btn btn-success">Turnar</button>
         </form>
       </div>
       <div class="modal-footer">

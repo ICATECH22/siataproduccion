@@ -31,13 +31,13 @@
                         <h3 style="margin-left: 20px;" class="mb-0">
 
                             @if($detallesServicio->estatusSolicitud == 'Pendiente')
-                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-default">{{$detallesServicio->estatusSolicitud }} </a>
+                                <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-default"><i class="fas fa-pause"></i> {{$detallesServicio->estatusSolicitud }} </a>
                             @elseif($detallesServicio->estatusSolicitud == 'Rechazado')
-                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-danger">{{$detallesServicio->estatusSolicitud }} </a>
+                                <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-danger"><i class="fas fa-ban"></i> {{$detallesServicio->estatusSolicitud }} </a>
                             @elseif($detallesServicio->estatusSolicitud == 'Atendido')
-                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-success">{{$detallesServicio->estatusSolicitud }} </a>
+                                <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-success"><i class="fas fa-check"></i> {{$detallesServicio->estatusSolicitud }} </a>
                             @elseif($detallesServicio->estatusSolicitud == 'Turnado')
-                            <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-warning">Se ha {{$detallesServicio->estatusSolicitud }} aL departamento de {{$detallesServicio->departamentoReceptor}}</a>
+                                <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-warning"><i class="fas fa-undo-alt"></i> Se ha {{$detallesServicio->estatusSolicitud }} a  {{$detallesServicio->departamentoReceptor}}</a>
                             @endif
 
                         </h3>
@@ -56,13 +56,13 @@
                                             <div class="btn-toolbar">
                                                 @if($unidadUsuario->id != $detallesServicio->idDepartamentoSolicitante )
                                                     @if($detallesServicio->estatusSolicitud != 'Atendido')
-                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'onclick=rechazar()' : ''}} type="button" class="btn btn-danger"><i class="mdi mdi-reply text-danger mr-2"></i> Rechazar</button>
-                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'data-toggle=modal data-target=#modalAtender' : ''}} type="button" class="btn btn-success"><i class="mdi mdi-check text-success mr-2"></i>Atender</button>
-                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'data-toggle=modal data-target=#turnadoModal' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-swap-horizontal text-info mr-2"></i>Turnar</button>
+                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'onclick=rechazar()' : ''}} type="button" class="btn btn-danger"><i class="fas fa-ban"></i> Rechazar</button>
+                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'data-toggle=modal data-target=#turnadoModal' : ''}} type="button" class="btn btn-info"><i class="fas fa-undo-alt"></i> Turnar</button>
+                                                        <button {{$detallesServicio->estatusSolicitud == 'Pendiente' || $detallesServicio->estatusSolicitud == 'Turnado' ? 'data-toggle=modal data-target=#modalAtender' : ''}} type="button" class="btn btn-success"><i class="fas fa-check"></i> Atender</button>
                                                     @endif
                                                 @else
                                                     @if($detallesServicio->estatusSolicitud == 'Rechazado')
-                                                    <button {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'onclick=mostrarOpcionesCorregir()' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-plus-box text-info mr-2"></i>Enviar nueva correccion</button>
+                                                        <button {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'onclick=mostrarOpcionesCorregir()' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-plus-box text-info mr-2"></i>Enviar nueva correccion</button>
                                                     @endif
                                                 @endif
                                             </div>
@@ -88,27 +88,25 @@
                                                 <p class="sender-email">
                                                     Enviado el: {{$fechaEnviado}}
                                                 </p>
+                                                <p>{{$detallesServicio->departamentoSolicitante}} escribió: <b>{{$detallesServicio->detallesServicio}}</b></p>
                                             </div>
                                         </div>
 
 
                                         @if($infoAdicionalSolicitud->motivo != '' )
-                                        <div class="sender-details">
+                                            <div class="sender-details">
 
-                                            <div class="details">
-                                                <p class="sender-email">
-                                                    Respuesta enviado el : {{$fechaEnviado}}
-                                                </p>
-                                                <p class="msg-subject">
-                                                    {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'Motivo de rechazo': 'Repuesta de la solicitud' }}: {{$infoAdicionalSolicitud->motivo}}
-                                                </p>
+                                                <div class="details">
+                                                    <p class="sender-email">
+                                                        Respuesta enviado el : {{$fechaEnviado}}
+                                                    </p>
+                                                    <p class="msg-subject">
+                                                        {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'Motivo de rechazo': 'Repuesta de la solicitud' }}: {{$infoAdicionalSolicitud->motivo}}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
                                         @endif
-                                        <div class="message-content">
-                                            <p>{{$detallesServicio->departamentoSolicitante}} escribió:</p>
-                                            {{$detallesServicio->detallesServicio}}
-                                        </div>
+
                                         <div class="attachments-sections">
                                             <ul>
                                                 <p class="msg-subject">
@@ -409,7 +407,7 @@
 
         Swal.fire({
             title: 'Rechazar solicitud',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',
@@ -460,7 +458,7 @@
         event.preventDefault();
         Swal.fire({
             title: 'Se transferira esta solicitdu a ',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',

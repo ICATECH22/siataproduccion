@@ -11,29 +11,17 @@
         <form id="transferirForm" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-row">
-                <div class="col-md-6 mb-3">
-                    <label for="unidades">Turnar a: <span class="form-control-label">*</span></label>
-                    <select style="width:100%;" class="form-control  @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="unidades" id="unidades">
-                        <option value="" selected>Selecciona una Unidad</option>
-                        @foreach ($unidades as $unidad)
-                                <option  value="{{ $unidad->idUnidad }}" style="background-color: #3332;">Unidad: {{ $unidad->descripcion }}</option>
-                        @endforeach
-                    </select>
-                    @error('servicio')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                    @enderror
-                </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="organos">Organo Administrativo: <span class="form-control-label">*</span></label>
                     <select style="width:100%;" class="form-control  @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="organos" id="organos">
                         <option class="form-control " value="">Selecciona un Organo Administrativo</option>
+                        @foreach ($organoAdm as $item)
+                            <option  value="{{ $item->id }}" style="background-color: #3332;">{{ $item->organo }}</option>
+                        @endforeach
                     </select>
                 </div>
-            </div>
-            <div class="form-row">
+
                 <div class="col-md-6 mb-3">
                     <label for="deptos">Departamentos: <span class="form-control-label">*</span></label>
                     <select style="width:100%;" class="form-control  @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="deptos" id="deptos">
@@ -41,11 +29,24 @@
                     </select>
                 </div>
 
+            </div>
+            <div class="form-row">
+
                 <div class="col-md-6 mb-3">
                     <label for="servicios">Servicios: <span class="form-control-label">*</span></label>
                     <select style="width:100%;" class="form-control  @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="servicios" id="servicios">
                         <option class="form-control " value="">Selecciona un Servicio</option>
                     </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="archivoReturnar">Adjuntar Archivo:</label>
+                    <input type="file" name="archivoReturnar" id="archivoReturnar" class="form-control @error('archivo')  is-invalid @enderror"/>
+                    @error('archivo')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
                 </div>
             </div>
             <div class="form-row">
@@ -59,21 +60,11 @@
                     @enderror
                 </div>
             </div>
-            <div class="form-row">
-                <div class="col-md-6 mb-3">
-                    <input type="file" name="archivoReturnar" id="archivoReturnar" class="form-control @error('archivo')  is-invalid @enderror"/>
-                    @error('archivo')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                    @enderror
-                </div>
-            </div>
             <button type="submit" class="btn btn-success">Turnar</button>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
       </div>
     </div>
   </div>

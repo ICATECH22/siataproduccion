@@ -28,29 +28,14 @@
                         <p class="text-center">Nuevo Servicio</p>
 
                         <div class="form-row mb-3">
-                            <label for="to" class="col-md-2 col-sm-1 col-form-label">Unidad de Capacitacion:</label>
-                            <div class="col-10 col-sm-11">
-                                <select style="width:100%;" class="form-control @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="unidad" id="unidad">
-                                    <option selected="true" disabled="disabled">Selecciona una unidad</option>
 
-                                    @foreach ($unidades as $unidad)
-                                    <option value="{{ $unidad->idUnidad }}"> {{ $unidad->descripcion }}</option>
-                                    @endforeach
-
-                                </select>
-
-                                @error('unidad')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="form-row mb-3">
-                            <label for="to" class="col-md-2 col-sm-1 col-form-label">Organo:</label>
-                            <div class="col-10 col-sm-11">
+                            <div class="col-6 col-sm-6">
+                                <label for="organo" class="col-form-label">Organo Administrativo:</label>
                                 <select style="width:100%;" class="form-control @error('organo')  is-invalid @enderror" aria-label=".form-select-md example" name="organo" id="organoSelect">
-                                    <option class="form-control form-control-alternative{{ $errors->has('organo') ? ' is-invalid' : '' }}" selected="true" disabled="disabled">Selecciona un servicio</option>
+                                    <option class="form-control" value="">Selecciona un servicio</option>
+                                    @foreach ($organoAdm as $item)
+                                        <option value="{{ $item->id }}"> {{ $item->organo }}</option>
+                                    @endforeach
                                 </select>
 
                                 @error('organo')
@@ -59,10 +44,8 @@
                                 </span>
                                 @enderror
                             </div>
-                        </div>
-                        <div class="form-row mb-3">
-                            <label for="to" class="col-md-2 col-sm-1 col-form-label">Servicios por departamento:</label>
-                            <div class="col-10 col-sm-11">
+                            <div class="col-6 col-sm-6">
+                                <label for="servicio" class="col-form-label">Servicios por departamento:</label>
                                 <select style="width:100%;" class="form-control @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="servicio" id="servicioSelect">
                                     <option class="form-control form-control-alternative{{ $errors->has('servicio') ? ' is-invalid' : '' }}" selected="true" disabled="disabled">Selecciona un servicio</option>
                                 </select>
@@ -145,27 +128,27 @@
         })
     }
     $(document).ready(function(){
-        $("#unidad").change(function() {
-            var id = $(this).children(":selected").attr("value");
-            let url = "{{ route('unidadOrgano', ":idUnidad") }}";
-            url = url.replace(":idUnidad", id);
-            console.log(url);
-            $.ajax({
-                url: url,
-                type: 'get',
-                dataType: 'json',
-                success: function(response) {
-                    console.log(response)
-                    $("#organoSelect").empty();
+        // $("#unidad").change(function() {
+        //     var id = $(this).children(":selected").attr("value");
+        //     let url = "{{ route('unidadOrgano', ":idUnidad") }}";
+        //     url = url.replace(":idUnidad", id);
+        //     console.log(url);
+        //     $.ajax({
+        //         url: url,
+        //         type: 'get',
+        //         dataType: 'json',
+        //         success: function(response) {
+        //             console.log(response)
+        //             $("#organoSelect").empty();
 
-                    for (var i = 0; i < response.length; i++) {
-                        var idUnidad = response[i]['idparent'];
-                        $("#organoSelect").append("<option value='" + response[i]['id'] + "'>" + response[i]['organo'] + "</option>");
-                    }
-                    $("#organoSelect").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
-                }
-            });
-        });
+        //             for (var i = 0; i < response.length; i++) {
+        //                 var idUnidad = response[i]['idparent'];
+        //                 $("#organoSelect").append("<option value='" + response[i]['id'] + "'>" + response[i]['organo'] + "</option>");
+        //             }
+        //             $("#organoSelect").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
+        //         }
+        //     });
+        // });
 
         $("#organoSelect").change(function() {
             var id = $(this).children(":selected").attr("value");

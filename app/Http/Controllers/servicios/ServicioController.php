@@ -136,14 +136,13 @@ class ServicioController extends Controller
         $usuario = User::find(Auth::id())->first();
 
         $servicios = [];
-        $unidades = Unidad::toBase()->where('estatus', 1)->get();
+        // $unidades = Unidad::toBase()->where('estatus', 1)->get();
+        $organoAdm = Organo::where([['estatus', '1']])->get();
         // $servicios = [];Servicios::select('servicios.idServicio', 'servicios.descripcion', 'servicios.idDepartamento', 'departamento.departamento')
         //     ->join('departamento', 'departamento.id', '=', 'servicios.idDepartamento')
         //     ->where('departamento.id', '!=', $usuario->idOrganoDepartamento)
         //     ->get(); //obtiene todos los servicios por areas excepto la misma
-
-        //     dd($servicios->toArray());
-        return view('servicios.crearServicio', compact('unidades', 'servicios', 'usuario'));
+        return view('servicios.crearServicio', compact('organoAdm', 'servicios', 'usuario'));
     }
 
     /**
@@ -156,7 +155,7 @@ class ServicioController extends Controller
     {
 
 
-        $validExtensions = ['pdf', 'jpg', 'jpeg', 'xls', 'docx'];
+        $validExtensions = ['pdf', 'jpg', 'jpeg', 'xls', 'docx', 'xlsx'];
         $request->validate([
             'servicio' => 'required',
             'descripcion' => 'required',
@@ -229,96 +228,99 @@ class ServicioController extends Controller
 
             $usuario = User::where('idOrganoDepartamento', $idDepartamentoReceptora)->first(); //usuario jefe de departamento al que se le envia la solicitud (Area atencion)
 
-            // dd($usuario->toArray());
-            $departamentoSolicitante = Departamento::with('organo')->where('id', $idDepartamentoSolicitante)->first(); //el que solicita
-            // dd($departamentoSolicitante->toArray(), $datosUsuario);
-            $departamentoAtencion = Departamento::with('organo')->where('id', $usuario->idOrganoDepartamento)->first(); //el que atiende la soli
-            // dd($departamentoSolicitante->toArray());
-            // dd($departamentoAtencion->toArray(),$usuario->toArray());
-            $servicio = Servicios::where('idServicio', $servicio)->first()->descripcion;
+            if (count((array)$usuario) > 0) {
+                # si hay una consulta se tiene que hacer todo la información
 
-            if ($datosUsuario->idRol == 3 || $datosUsuario->idRol == 1) { //si el usuario que esta solicitando el servicio es jefe de area (ejemplo: Ing. Alejandro, Unidad Inforrmatica)
-                $id_parentSolicitante = $departamentoSolicitante->id;
-            } else {
-                $id_parentSolicitante = $departamentoSolicitante->organo->id;
-            }
+                $departamentoSolicitante = Departamento::with('organo')->where('id', $idDepartamentoSolicitante)->first(); //el que solicita
+                $departamentoAtencion = Departamento::with('organo')->where('id', $usuario->idOrganoDepartamento)->first(); //el que atiende la solicitud
+
+                $servicio = Servicios::where('idServicio', $servicio)->first()->descripcion;
+
+                if ($datosUsuario->idRol == 3 || $datosUsuario->idRol == 1) { //si el usuario que esta solicitando el servicio es jefe de area (ejemplo: Ing. Alejandro, Unidad Inforrmatica)
+                    $id_parentSolicitante = $departamentoSolicitante->id;
+                } else {
+                    $id_parentSolicitante = $departamentoSolicitante->organo->id;
+                }
 
 
-            if ($usuario->idRol == 3) {
-                $id_parentAtencion = $departamentoAtencion->id;
-            } else {
-                $id_parentAtencion = $departamentoAtencion->organo->id;
-            }
+                if ($usuario->idRol == 3) {
+                    $id_parentAtencion = $departamentoAtencion->id;
+                } else {
+                    $id_parentAtencion = $departamentoAtencion->organo->id;
+                }
 
-            $infoDirectorSolicitante = User::where('idOrganoDepartamento', $id_parentSolicitante)->first(); //info director organo de unidad solicitante
-            $infoDirectorAtencion = User::where('idOrganoDepartamento', $id_parentAtencion)->first(); //info director organo de unidad de atencion
+                $infoDirectorSolicitante = User::where('idOrganoDepartamento', $id_parentSolicitante)->first(); //info director organo de unidad solicitante
+                $infoDirectorAtencion = User::where('idOrganoDepartamento', $id_parentAtencion)->first(); //info director organo de unidad de atencion
 
-            // dd($infoDirectorAtencion->toArray(), $infoDirectorSolicitante->toArray());
+                // dd($infoDirectorAtencion->toArray(), $infoDirectorSolicitante->toArray());
 
-            $contenido = [ //se envia 1 notificacion para jefe area solicitante, usuario atencion  y jere area atencion
-                [ //contenido para jefe de area atencion
-                    'idusuario' => $usuario->idUsuario,
-                    'usuario' => $usuario->name,
-                    'areaAtencion' => $departamentoAtencion->area,
-                    'titulo' => 'Tienes una nueva solicitud de ' . $departamentoSolicitante->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $usuario->idDepartamento,
-                    'notifiable' => true,
+                $contenido = [ //se envia 1 notificacion para jefe area solicitante, usuario atencion  y jere area atencion
+                    [ //contenido para jefe de area atencion
+                        'idusuario' => $usuario->idUsuario,
+                        'usuario' => $usuario->name,
+                        'areaAtencion' => $departamentoAtencion->area,
+                        'titulo' => 'Tienes una nueva solicitud de ' . $departamentoSolicitante->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $usuario->idDepartamento,
+                        'notifiable' => true,
 
-                ],
-                [ //contenido para director area de atencion
-                    'idusuario' => $infoDirectorAtencion->idUsuario,
-                    'usuario' => $infoDirectorAtencion->name,
-                    'areaAtencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoAtencion->area .  ' Tiene una nueva solicitud de' . ' ' . $departamentoSolicitante->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $departamentoAtencion->idparent,
-                    'notifiable' => true,
-                ],
-                [ //contenido para director area solicitante
-                    'idusuario' => $infoDirectorSolicitante->idUsuario,
-                    'usuario' => $infoDirectorSolicitante->name,
-                    'areaAtencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoSolicitante->area . ' Envio una nueva solicitud a ' . $departamentoAtencion->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $departamentoSolicitante->idparent,
-                    'notifiable' => true,
-                ]
-            ];
-            // dd($contenido);
-            if ($infoDirectorAtencion->idUsuario == $infoDirectorSolicitante->idUsuario) {
-                $contenido[1]['notifiable'] = false;
-            }
-            if (isset($usuario->idUsuario)) {
-                foreach ($contenido as $notificacion) {
+                    ],
+                    [ //contenido para director area de atencion
+                        'idusuario' => $infoDirectorAtencion->idUsuario,
+                        'usuario' => $infoDirectorAtencion->name,
+                        'areaAtencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoAtencion->area .  ' Tiene una nueva solicitud de' . ' ' . $departamentoSolicitante->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $departamentoAtencion->idparent,
+                        'notifiable' => true,
+                    ],
+                    [ //contenido para director area solicitante
+                        'idusuario' => $infoDirectorSolicitante->idUsuario,
+                        'usuario' => $infoDirectorSolicitante->name,
+                        'areaAtencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoSolicitante->area . ' Envio una nueva solicitud a ' . $departamentoAtencion->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $departamentoSolicitante->idparent,
+                        'notifiable' => true,
+                    ]
+                ];
+                // dd($contenido);
+                if ($infoDirectorAtencion->idUsuario == $infoDirectorSolicitante->idUsuario) {
+                    $contenido[1]['notifiable'] = false;
+                }
+                if (isset($usuario->idUsuario)) {
+                    foreach ($contenido as $notificacion) {
 
-                    $letter = [
-                        'titulo' => $notificacion['titulo'],
-                        'servicio' => $servicio,
-                        'detalles' => $request->descripcion,
-                        'url' => '/siata/detalles/' . $datosSolicitud->id,
-                    ];
-                    $letter = json_encode($letter);
+                        $letter = [
+                            'titulo' => $notificacion['titulo'],
+                            'servicio' => $servicio,
+                            'detalles' => $request->descripcion,
+                            'url' => '/siata/detalles/' . $datosSolicitud->id,
+                        ];
+                        $letter = json_encode($letter);
 
-                    Notificacion::create([
-                        'idSolicitud' => $datosSolicitud->id,
-                        'type' => 'App\Notifications\SupreNotification',
-                        'notifiable_type' => 'App\Models\User',
-                        'notifiable_id' => $notificacion['idusuario'],
-                        'data' => $letter,
-                        'created_at' => Carbon::now(),
-                        'read_at' => null,
-                        'updated_at' => null,
-                        'read_movil' => false
-                    ]);
+                        Notificacion::create([
+                            'idSolicitud' => $datosSolicitud->id,
+                            'type' => 'App\Notifications\SupreNotification',
+                            'notifiable_type' => 'App\Models\User',
+                            'notifiable_id' => $notificacion['idusuario'],
+                            'data' => $letter,
+                            'created_at' => Carbon::now(),
+                            'read_at' => null,
+                            'updated_at' => null,
+                            'read_movil' => false
+                        ]);
 
-                    if ($notificacion['notifiable']) {
-                        $this->enviarNotificacion($notificacion['idusuario'], $notificacion['titulo'], $notificacion['contenido']); //se envia notificacion a jefe y/o directores  de area de atencion
+                        if ($notificacion['notifiable']) {
+                            $this->enviarNotificacion($notificacion['idusuario'], $notificacion['titulo'], $notificacion['contenido']); //se envia notificacion a jefe y/o directores  de area de atencion
+                        }
                     }
                 }
+
+            } else {
+                # si no se realiza una consulta completamente diferente
+
             }
-
-
 
             DB::commit();
 
@@ -389,7 +391,8 @@ class ServicioController extends Controller
         /**
          * obtener el organo
          */
-        $unidades = Unidad::where('estatus', '1')->get();
+        // $unidades = Unidad::where('estatus', '1')->get();
+        $organoAdm = Organo::where([['estatus', '1']])->get();
 
         $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
         $fecha = Carbon::parse($detallesServicio->fechaAltaa);
@@ -400,7 +403,7 @@ class ServicioController extends Controller
         $infoAdicionalSolicitud->fechaAlta = date('d/M/Y ', strtotime($infoAdicionalSolicitud->fechaAlta)) . ' a las ' . date('H:i', strtotime($infoAdicionalSolicitud->fechaAlta));
 
         // dd($unidadUsuario,$detallesServicio);
-        return view('servicios.responderServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'unidades', 'unidadUsuario', 'fechaEnviado'));
+        return view('servicios.responderServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'organoAdm', 'unidadUsuario', 'fechaEnviado'));
     }
 
     public function detalles2($id) //recibe id de la solicitud
@@ -1018,115 +1021,115 @@ class ServicioController extends Controller
             //jefe de departamento al que se le enviara la notificacion de solicitud transferida
             $usuario = User::where([['idOrganoDepartamento', $newIdDepartamentoReceptora],['idRol','3']])->first();
 
-
             $departamentoSolicitante =Departamento::with('organo')->where('id', $solicitud->idDepartamentoSolicitante)->first();
             $departamentoAtencion =Departamento::with('organo')->where('id', $idAntiguoDepartamentoAtencion)->first();
-
-
             $departamentoAtencionTurnado = Departamento::with('organo')->where('id', $newIdDepartamentoReceptora)->first();
-            $usuarioTransferido = User::where([['idOrganoDepartamento', $departamentoAtencionTurnado->id],['idRol','3']])->first();
 
-            // $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
-            // $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
+            // checamos si la consulta arroja algo si no trae algo tenemos que realizar una modificación
+            if (count((array)$usuario) > 0) {
+                # si hay registros tenemos información
 
-            $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
-            $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
-            $infoDirectorSolicitudTurnado = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
-            $infoDirectorAtencionTurnado = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencionTurnado->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
-            // dump($infoDirectorSolicitante->toArray(), $infoDirectorAtencion->toArray());
+                $usuarioTransferido = User::where([['idOrganoDepartamento', $departamentoAtencionTurnado->id],['idRol','3']])->first();
+                $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
+                $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
+                $infoDirectorSolicitudTurnado = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
+                $infoDirectorAtencionTurnado = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencionTurnado->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
 
-            $contenido = [
-                [ //contenido para jefe de area solicitante
-                    'idusuario' => $usuario->idUsuario,
-                    'usuario' => $usuario->name,
-                    'areaatencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoAtencion->area . ' Ha turnado tu solicitud al area ' .  $departamentoAtencionTurnado->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $usuario->idDepartamento,
-                    'notifiable' => true,
+                $contenido = [
+                    [ //contenido para jefe de area solicitante
+                        'idusuario' => $usuario->idUsuario,
+                        'usuario' => $usuario->name,
+                        'areaatencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoAtencion->area . ' Ha turnado tu solicitud al area ' .  $departamentoAtencionTurnado->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $usuario->idDepartamento,
+                        'notifiable' => true,
 
-                ],
-                [ //contenido para jefe de area transferida
-                    'idusuario' => $usuarioTransferido->idUsuario,
-                    'usuario' => $usuarioTransferido->name,
-                    'areaatencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoAtencion->area . ' Te ha turnado una solicitud del area ' . $departamentoSolicitante->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $usuarioTransferido->idDepartamento,
-                    'notifiable' => true,
+                    ],
+                    [ //contenido para jefe de area transferida
+                        'idusuario' => $usuarioTransferido->idUsuario,
+                        'usuario' => $usuarioTransferido->name,
+                        'areaatencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoAtencion->area . ' Te ha turnado una solicitud del area ' . $departamentoSolicitante->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $usuarioTransferido->idDepartamento,
+                        'notifiable' => true,
 
-                ],
-                [ //contenido para director area de atencion
-                    'idusuario' => $infoDirectorAtencion->idUsuario,
-                    'usuario' => $infoDirectorAtencion->name,
-                    'areaatencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoAtencion->area .  ' Ha turnado la  solicitud de' . ' ' . $departamentoSolicitante->area . ' al area de ' . $departamentoAtencionTurnado->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $departamentoAtencion->idparent,
-                    'notifiable' => true,
-                ],
-                [ //contenido para director area solicitante
-                    'idusuario' => $infoDirectorSolicitante->idUsuario,
-                    'usuario' => $infoDirectorSolicitante->name,
-                    'areaatencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoAtencion->area . ' Turnó la solicitud de ' . $departamentoSolicitante->area . ' al area de ' . $departamentoAtencionTurnado->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $departamentoSolicitante->idparent,
-                    'notifiable' => true,
-                ],
-                [ //contenido para director area de atencion transferida
-                    'idusuario' => $infoDirectorSolicitudTurnado->idUsuario,
-                    'usuario' => $infoDirectorSolicitudTurnado->name,
-                    'areaatencion' => $departamentoAtencionTurnado->area,
-                    'titulo' => $departamentoAtencion->area .  ' Ha turnado una solicitud del area' . ' ' . $departamentoSolicitante->area . ' al area de ' . $departamentoAtencionTurnado->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $departamentoAtencionTurnado->idparent,
-                    'notifiable' => true,
-                ],
-                [ //contenido para director area de atencion transferida
-                    'idusuario' => $infoDirectorAtencionTurnado->idUsuario,
-                    'usuario' => $infoDirectorAtencionTurnado->name,
-                    'areaatencion' => $departamentoAtencionTurnado->area,
-                    'titulo' => $departamentoAtencion->area .  ' Ha turnado una solicitud del area' . ' ' . $departamentoSolicitante->area . ' al area de ' . $departamentoAtencionTurnado->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $departamentoAtencionTurnado->idparent,
-                    'notifiable' => true,
-                ],
+                    ],
+                    [ //contenido para director area de atencion
+                        'idusuario' => $infoDirectorAtencion->idUsuario,
+                        'usuario' => $infoDirectorAtencion->name,
+                        'areaatencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoAtencion->area .  ' Ha turnado la  solicitud de' . ' ' . $departamentoSolicitante->area . ' al area de ' . $departamentoAtencionTurnado->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $departamentoAtencion->idparent,
+                        'notifiable' => true,
+                    ],
+                    [ //contenido para director area solicitante
+                        'idusuario' => $infoDirectorSolicitante->idUsuario,
+                        'usuario' => $infoDirectorSolicitante->name,
+                        'areaatencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoAtencion->area . ' Turnó la solicitud de ' . $departamentoSolicitante->area . ' al area de ' . $departamentoAtencionTurnado->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $departamentoSolicitante->idparent,
+                        'notifiable' => true,
+                    ],
+                    [ //contenido para director area de atencion transferida
+                        'idusuario' => $infoDirectorSolicitudTurnado->idUsuario,
+                        'usuario' => $infoDirectorSolicitudTurnado->name,
+                        'areaatencion' => $departamentoAtencionTurnado->area,
+                        'titulo' => $departamentoAtencion->area .  ' Ha turnado una solicitud del area' . ' ' . $departamentoSolicitante->area . ' al area de ' . $departamentoAtencionTurnado->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $departamentoAtencionTurnado->idparent,
+                        'notifiable' => true,
+                    ],
+                    [ //contenido para director area de atencion transferida
+                        'idusuario' => $infoDirectorAtencionTurnado->idUsuario,
+                        'usuario' => $infoDirectorAtencionTurnado->name,
+                        'areaatencion' => $departamentoAtencionTurnado->area,
+                        'titulo' => $departamentoAtencion->area .  ' Ha turnado una solicitud del area' . ' ' . $departamentoSolicitante->area . ' al area de ' . $departamentoAtencionTurnado->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $departamentoAtencionTurnado->idparent,
+                        'notifiable' => true,
+                    ],
 
-            ];
+                ];
 
+                if ($infoDirectorAtencion->idUsuario == $infoDirectorSolicitante->idUsuario) {
+                    $contenido[2]['notifiable'] = false;
+                }
 
-            if ($infoDirectorAtencion->idUsuario == $infoDirectorSolicitante->idUsuario) {
-                $contenido[2]['notifiable'] = false;
-            }
+                if (isset($usuario->idUsuario)) {
+                    foreach ($contenido as $notificacion) {
 
-            if (isset($usuario->idUsuario)) {
-                foreach ($contenido as $notificacion) {
+                        $letter = [
+                            'titulo' => $notificacion['titulo'],
+                            'servicio' => $servicio,
+                            'detalles' => $request->descripcionTransferencia . '' ?? 'N/A',
+                            'url' => '/siata/detalles/' . $id,
+                        ];
+                        $letter = json_encode($letter);
 
-                    $letter = [
-                        'titulo' => $notificacion['titulo'],
-                        'servicio' => $servicio,
-                        'detalles' => $request->descripcionTransferencia . '' ?? 'N/A',
-                        'url' => '/siata/detalles/' . $id,
-                    ];
-                    $letter = json_encode($letter);
+                        Notificacion::create([
+                            'idSolicitud' => $id,
+                            'type' => 'App\Notifications\SupreNotification',
+                            'notifiable_type' => 'App\Models\User',
+                            'notifiable_id' => $notificacion['idusuario'],
+                            'data' => $letter,
+                            'created_at' => Carbon::now(),
+                            'read_at' => null,
+                            'updated_at' => null,
+                            'read_movil' => false
+                        ]);
 
-                    Notificacion::create([
-                        'idSolicitud' => $id,
-                        'type' => 'App\Notifications\SupreNotification',
-                        'notifiable_type' => 'App\Models\User',
-                        'notifiable_id' => $notificacion['idusuario'],
-                        'data' => $letter,
-                        'created_at' => Carbon::now(),
-                        'read_at' => null,
-                        'updated_at' => null,
-                        'read_movil' => false
-                    ]);
-
-                    if ($notificacion['notifiable']) {
-                        $this->enviarNotificacion($notificacion['idusuario'], $notificacion['titulo'], $notificacion['contenido']); //se envia notificacion a jefe y/o directores  de area de atencion
+                        if ($notificacion['notifiable']) {
+                            $this->enviarNotificacion($notificacion['idusuario'], $notificacion['titulo'], $notificacion['contenido']); //se envia notificacion a jefe y/o directores  de area de atencion
+                        }
                     }
                 }
+
+            } else {
+                // si no hay registros
             }
 
             DB::commit();

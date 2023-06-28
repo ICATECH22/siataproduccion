@@ -258,7 +258,7 @@
 </div>
 
 
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     var url = window.location.pathname;
     var id = url.substring(url.lastIndexOf('/') + 1);
@@ -299,7 +299,7 @@
 
         Swal.fire({
             title: 'Rechazar solicitud',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',
@@ -350,7 +350,7 @@
         event.preventDefault();
         Swal.fire({
             title: 'Se transferira esta solicitdu a ',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',
@@ -375,7 +375,7 @@
         event.preventDefault();
         Swal.fire({
             title: 'Se enviara la correccion',
-            imageUrl: '/images/iconos/exclamacion.PNG',
+            icon: 'warning',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Custom image',

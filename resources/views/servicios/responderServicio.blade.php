@@ -188,7 +188,7 @@
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
             }
-        });
+    });
         $('#frmSeguimiento').validate({
             errorClass: "error",
             rules: {

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\archivos\ArchivosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,5 +140,10 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::get('unidad/getOrgano/{idUnidad}', ['as' => 'unidadOrgano', 'uses' => 'App\Http\Controllers\catalogos\CatalogoUnidadController@getOrganos']);
 		Route::get('departamentos/servicios/{idOrgano}', ['as' => 'serviciosDepartamentos', 'uses' => 'App\Http\Controllers\catalogos\CatalogoUnidadController@getServiciosDepartamentos']);
         Route::get('departamentos/servicio/{idDepto}', ['as' => 'ServicioByDepto', 'uses' => 'App\Http\Controllers\catalogos\CatalogoUnidadController@getServiciosSerachByDepto']);
+
+        /**
+         * agregar una ruta extra para leer los archivos
+         */
+        Route::get('/archivo/{id}', [ArchivosController::class, 'show'])->name('archivo.getfile');
 
 });

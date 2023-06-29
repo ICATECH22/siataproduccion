@@ -166,13 +166,6 @@ class ServicioController extends Controller
         try {
             $archivo = $request->file('archivo') ?? null;
 
-
-            if ($archivo != null && !in_array($archivo->getClientOriginalExtension(), $validExtensions)) {
-                return 'extension invalida';
-            } else if ($archivo != null) {
-                $nombre = $archivo->getClientOriginalName();
-            }
-
             $destino = 'files/archivosservicios'; // el destino dónde se guardará el archivo
 
             $datosUsuario = User::toBase()->where([
@@ -201,11 +194,20 @@ class ServicioController extends Controller
                 'fechaUMod' => null
             ]);
 
+            // parte de los archivos
+
+            if ($archivo != null && !in_array($archivo->getClientOriginalExtension(), $validExtensions)) {
+                return 'extension invalida';
+            } else if ($archivo != null) {
+                $nombre = $datosSolicitud->id.'_'.time().'.'.$archivo->extension();
+            }
+
             if ($archivo != null) {
+                $path = $archivo->storeAs($destino, $nombre, 'public');
                 $archivo =  UrlArchivo::create([
                     'idSolicitud' => $datosSolicitud->id,
                     'tipoArchivo' => 'original',
-                    'urlArchivo' => $request->archivo->move(public_path($destino), $nombre),
+                    'urlArchivo' => $path,
                     'nombreArchivo' => $nombre,
                     'estatus' => 1,
                     'idUsuarioAlta' => Auth::id(),
@@ -416,7 +418,7 @@ class ServicioController extends Controller
             $datosUsuario = User::with('organo')->where([['estatus', 1], ['idUsuario', Auth::id()]])->first();
         }
         $unidadUsuario = $datosUsuario->departamento;
-        $unidades = Unidad::toBase()->where('estatus', 1)->get();
+        $organoAdmin = Organo::where([['estatus', '1']])->get();
         $detallesServicio = SolicitudServicio::select(DB::raw('solicitudes.id,solicitudes.descripcion as detallesServicio,ds.departamento as departamentoSolicitante,dr.departamento as departamentoReceptor,solicitudes.estatusSolicitud,solicitudes.visto,solicitudes.lector,solicitudes.estatus,s2.descripcion as servicio,date_format(solicitudes.fechaAlta, "%D-%M-%Y") as fechaAltaa'))
             ->join('departamento as ds', 'ds.id', '=', 'solicitudes.idDepartamentoSolicitante')
             ->join('departamento as dr', 'dr.id', '=', 'solicitudes.idDepartamentoReceptora')
@@ -458,7 +460,7 @@ class ServicioController extends Controller
             }
         }
 
-        return view('servicios.detallesServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'unidades', 'unidadUsuario', 'fechaEnvio'));
+        return view('servicios.detallesServicio', compact('detallesServicio', 'infoAdicionalSolicitud', 'files', 'organoAdmin', 'unidadUsuario', 'fechaEnvio'));
     }
 
 
@@ -614,7 +616,7 @@ class ServicioController extends Controller
                     UrlArchivo::create([
                         'idSolicitud' => $id,
                         'tipoArchivo' => 'atendido',
-                        'urlArchivo' => '/storage/'.$filePath,
+                        'urlArchivo' => $filePath,
                         'nombreArchivo' => $nombreArchivo,
                         'estatus' => 1,
                         'idUsuarioAlta' => Auth::id(),
@@ -769,7 +771,7 @@ class ServicioController extends Controller
             if ($archivo != null && !in_array($archivo->getClientOriginalExtension(), $validExtensions)) {
                 return 'extension invalida';
             } else if ($archivo != null) {
-                $nombreArchivo = $archivo->getClientOriginalName();
+                $nombreArchivo = $id.'_'.time().'.'.$archivo->extension();
             }
 
             $destino = 'files/archivosservicios';
@@ -804,7 +806,7 @@ class ServicioController extends Controller
                     DB::table('archivos')
                         ->where([['idSolicitud', $id], ['tipoArchivo', 'original']])
                         ->update([
-                            'urlArchivo' => $request->archivoNuevo->move(public_path($destino), $nombreArchivo),
+                            'urlArchivo' => $archivo->storeAs($destino, $nombreArchivo, 'public'),
                             'nombreArchivo' => $nombreArchivo,
                             'idUsuarioUMod' => Auth::id(),
                             'fechaUMod' => Carbon::now()
@@ -813,7 +815,7 @@ class ServicioController extends Controller
                     $archivo =  UrlArchivo::create([
                         'idSolicitud' => $id,
                         'tipoArchivo' => 'original',
-                        'urlArchivo' => $request->archivoNuevo->move(public_path($destino), $nombreArchivo),
+                        'urlArchivo' => $archivo->storeAs($destino, $nombreArchivo, 'public'),
                         'nombreArchivo' => $nombreArchivo,
                         'estatus' => 1,
                         'idUsuarioAlta' => Auth::id(),
@@ -842,87 +844,81 @@ class ServicioController extends Controller
 
             $usuario = User::where('idOrganoDepartamento', $solicitud->idDepartamentoReceptora)->first();
 
-
             $departamentoSolicitante = Departamento::with('organo')->where('id', $solicitud->idDepartamentoSolicitante)->first();
             $departamentoAtencion = Departamento::with('organo')->where('id', $solicitud->idDepartamentoReceptora)->first();
             // dd($departamentoSolicitante->toArray(), $departamentoAtencion->toArray());
 
+            // checar si hay o no un usuario si hay trabajamos lo siguiente dentro
+            if (count((array)$usuario) > 0) {
+                # se ejecuta si hay un usuario seleccionado
+                $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
+                $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
 
+                $contenido = [
+                    [ //contenido para jefe de area atencion
+                        'idusuario' => $usuario->idUsuario,
+                        'usuario' => $usuario->name,
+                        'areaatencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoSolicitante->area . ' Le ha enviado una version corregida de la solicitud ',
+                        // 'Tienes una nueva solicitud de ' . $departamentoSolicitante->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $usuario->idDepartamento,
+                        'notifiable' => true,
 
-            $infoDirectorSolicitante = User::with('organo')->where([['idOrganoDepartamento', $departamentoSolicitante->organo->id],['idRol',2]])->first(); //info director de unidad solicitante
-            $infoDirectorAtencion = User::with('organo')->where([['idOrganoDepartamento', $departamentoAtencion->organo->id],['idRol',2]])->first(); //info director de unidad de atencion
-            // dd($infoDirectorSolicitante->toArray(), $infoDirectorAtencion->toArray(),$servicio);
+                    ],
+                    [ //contenido para director area de atencion
+                        'idusuario' => $infoDirectorAtencion->idUsuario,
+                        'usuario' => $infoDirectorAtencion->name,
+                        'areaatencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoSolicitante->area .  ' Ha enviado una correccion de la solicitud a' . ' ' . $departamentoAtencion->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $departamentoAtencion->idparent,
+                        'notifiable' => true,
+                    ],
+                    [ //contenido para director area solicitante
+                        'idusuario' => $infoDirectorSolicitante->idUsuario,
+                        'usuario' => $infoDirectorSolicitante->name,
+                        'areaatencion' => $departamentoAtencion->area,
+                        'titulo' => $departamentoSolicitante->area . ' Envio una correccion de la solicitud a ' . $departamentoAtencion->area,
+                        'contenido' =>  $servicio,
+                        'idunidad' => $departamentoSolicitante->idparent,
+                        'notifiable' => true,
+                    ]
+                ];
 
+                if ($infoDirectorAtencion->idUsuario == $infoDirectorSolicitante->idUsuario) {
+                    $contenido[1]['notifiable'] = false;
+                }
+                // dd($contenido);
+                if (isset($usuario->idUsuario)) {
+                    foreach ($contenido as $notificacion) {
 
+                        $letter = [
+                            'titulo' => $notificacion['titulo'],
+                            'servicio' => $servicio,
+                            'detalles' =>  $request->descripcion,
+                            'url' => '/siata/detalles/' . $id,
+                        ];
+                        $letter = json_encode($letter);
 
+                        Notificacion::create([
+                            'idSolicitud' => $id,
+                            'type' => 'App\Notifications\SupreNotification',
+                            'notifiable_type' => 'App\Models\User',
+                            'notifiable_id' => $notificacion['idusuario'],
+                            'data' => $letter,
+                            'created_at' => Carbon::now(),
+                            'read_at' => null,
+                            'updated_at' => null,
+                            'read_movil' => false
+                        ]);
 
-            $contenido = [
-                [ //contenido para jefe de area atencion
-                    'idusuario' => $usuario->idUsuario,
-                    'usuario' => $usuario->name,
-                    'areaatencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoSolicitante->area . ' Le ha enviado una version corregida de la solicitud ',
-                    // 'Tienes una nueva solicitud de ' . $departamentoSolicitante->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $usuario->idDepartamento,
-                    'notifiable' => true,
-
-                ],
-                [ //contenido para director area de atencion
-                    'idusuario' => $infoDirectorAtencion->idUsuario,
-                    'usuario' => $infoDirectorAtencion->name,
-                    'areaatencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoSolicitante->area .  ' Ha enviado una correccion de la solicitud a' . ' ' . $departamentoAtencion->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $departamentoAtencion->idparent,
-                    'notifiable' => true,
-                ],
-                [ //contenido para director area solicitante
-                    'idusuario' => $infoDirectorSolicitante->idUsuario,
-                    'usuario' => $infoDirectorSolicitante->name,
-                    'areaatencion' => $departamentoAtencion->area,
-                    'titulo' => $departamentoSolicitante->area . ' Envio una correccion de la solicitud a ' . $departamentoAtencion->area,
-                    'contenido' =>  $servicio,
-                    'idunidad' => $departamentoSolicitante->idparent,
-                    'notifiable' => true,
-                ]
-            ];
-
-            if ($infoDirectorAtencion->idUsuario == $infoDirectorSolicitante->idUsuario) {
-                $contenido[1]['notifiable'] = false;
-            }
-            // dd($contenido);
-            if (isset($usuario->idUsuario)) {
-                foreach ($contenido as $notificacion) {
-
-                    $letter = [
-                        'titulo' => $notificacion['titulo'],
-                        'servicio' => $servicio,
-                        'detalles' =>  $request->descripcion,
-                        'url' => '/siata/detalles/' . $id,
-                    ];
-                    $letter = json_encode($letter);
-
-                    Notificacion::create([
-                        'idSolicitud' => $id,
-                        'type' => 'App\Notifications\SupreNotification',
-                        'notifiable_type' => 'App\Models\User',
-                        'notifiable_id' => $notificacion['idusuario'],
-                        'data' => $letter,
-                        'created_at' => Carbon::now(),
-                        'read_at' => null,
-                        'updated_at' => null,
-                        'read_movil' => false
-                    ]);
-
-                    if ($notificacion['notifiable']) {
-                        $this->enviarNotificacion($notificacion['idusuario'], $notificacion['titulo'], $notificacion['contenido']); //se envia notificacion a jefe y/o directores  de area de atencion
+                        if ($notificacion['notifiable']) {
+                            $this->enviarNotificacion($notificacion['idusuario'], $notificacion['titulo'], $notificacion['contenido']); //se envia notificacion a jefe y/o directores  de area de atencion
+                        }
                     }
                 }
             }
-
-
-
 
             DB::commit();
             session(['message' => 'Se ha enviado la correccion correctamente']);
@@ -982,7 +978,7 @@ class ServicioController extends Controller
                     UrlArchivo::create([
                         'idSolicitud' => $id,
                         'tipoArchivo' => 'atendido',
-                        'urlArchivo' => '/storage/'.$filePath,
+                        'urlArchivo' => $filePath,
                         'nombreArchivo' => $fileName,
                         'estatus' => 1,
                         'idUsuarioAlta' => Auth::id(),

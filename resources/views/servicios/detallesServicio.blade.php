@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => __('User Profile')])
+@extends('layouts.app', ['title' => __('Detalles del Servicio - SIATA')])
 
 @section('content')
 @include('users.partials.header', [
@@ -48,109 +48,11 @@
 
 
                                                 @if($detallesServicio->estatusSolicitud == 'Rechazado')
-                                                <button {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'onclick=mostrarOpcionesCorregir()' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-plus-box text-info mr-2"></i>Enviar nueva correccion</button>
+                                                    <button {{$detallesServicio->estatusSolicitud == 'Rechazado' ? 'data-toggle=modal data-target=#modalCorrecion' : ''}} type="button" class="btn btn-info"><i class="mdi mdi-plus-box text-info mr-2"></i>Enviar nueva correccion</button>
                                                 @endif
 
 
 
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- div corregir solicitud cuando sea rechazadp -->
-                                    <div class="message-body" id="formCorregir" style="display: none">
-                                        <div class="sender-details">
-                                            <div id="opciones-transferir" class="col-md-12">
-                                                <div class="card-body">
-                                                    <form id="corregirForm" action="{{route('corregirSolicitud',$detallesServicio->id)}}" method="POST" enctype="multipart/form-data">
-                                                        @csrf
-
-                                                        <main class="col-md-12 col-sm-12">
-                                                            <p class="text-center">Corregir Servicio</p>
-
-                                                            <div class="form-row mb-3">
-                                                                <label for="to" class="col-md-2 col-sm-1 col-form-label">Unidad de Capacitacion:</label>
-                                                                <div class="col-10 col-sm-11">
-                                                                    <select style="width:100%;" class="form-control @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="unidad" id="unidad">
-                                                                        <option selected="true" disabled="disabled">Selecciona una unidad</option>
-
-                                                                        @foreach ($unidades as $unidad)
-                                                                        <option value="{{ $unidad->idUnidad }}"> {{ $unidad->descripcion }}</option>
-                                                                        @endforeach
-
-                                                                    </select>
-
-                                                                    @error('unidad')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <label for="to" class="col-md-2 col-sm-1 col-form-label">Organo:</label>
-                                                                <div class="col-10 col-sm-11">
-                                                                    <select style="width:100%;" class="form-control @error('organo')  is-invalid @enderror" aria-label=".form-select-md example" name="organo" id="organoSelect">
-                                                                        <option class="form-control form-control-alternative{{ $errors->has('organo') ? ' is-invalid' : '' }}" selected="true" disabled="disabled">Selecciona un servicio</option>
-                                                                    </select>
-
-                                                                    @error('organo')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <label for="to" class="col-md-2 col-sm-1 col-form-label">Servicios por departamento:</label>
-                                                                <div class="col-10 col-sm-11">
-                                                                    <select style="width:100%;" class="form-control @error('servicio')  is-invalid @enderror" aria-label=".form-select-md example" name="servicio" id="servicioSelect">
-                                                                        <option class="form-control form-control-alternative{{ $errors->has('servicio') ? ' is-invalid' : '' }}" selected="true" disabled="disabled">Selecciona un servicio</option>
-                                                                    </select>
-
-                                                                    @error('servicio')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-sm-11 ml-auto">
-                                                                    <div class="toolbar" role="toolbar">
-                                                                        <button type="button" class="btn btn-light">
-                                                                            <span class="fa fa-paperclip"></span>
-                                                                            <input hidden type="file" name="archivoNuevo" id="file-1" class="inputfile2 @error('archivoNuevo')  is-invalid @enderror" data-multiple-caption="{count} files selected" multiple />
-                                                                            <label for="file-1"><span>Adjuntar nuevo archivo&hellip;</span></label>
-                                                                            @error('archivoNuevo')
-                                                                            <span class="invalid-feedback" role="alert">
-                                                                                <strong>{{ $message }}</strong>
-                                                                            </span>
-                                                                            @enderror
-                                                                        </button>
-                                                                    </div>
-
-
-
-                                                                    <div class="form-group mt-4">
-                                                                        <textarea class="form-control @error('descripcion')  is-invalid @enderror" id="detalles" name="descripcion" rows="12" placeholder="Escriba aqui los detalles de la solicitud"></textarea>
-                                                                        @error('descripcion')
-                                                                        <span class="invalid-feedback" role="alert">
-                                                                            <strong>{{ $message }}</strong>
-                                                                        </span>
-                                                                        @enderror
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <a onclick="ocultarOpcionesCorregir()" type="button" class="btn btn-danger mt-4">{{ __('Cancelar') }}</a>
-                                                                        <button onclick="corregir()" class="btn btn-success mt-4">{{ __('Enviar correccion') }} </button>
-
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </main>
-
-                                                    </form>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -206,26 +108,18 @@
                                                     <div class="col-sm-3">
                                                         <div class="card">
                                                             <div class="card-body">
-                                                                <h5 class="card-title"><div class="thumb"><i class="mdi mdi-file-image"></i></div> {{$file->nombreArchivo}}</h5>
+                                                                <h5 class="card-title">
+                                                                    <div class="thumb">
+                                                                        <i class="mdi mdi-file-image"></i>
+                                                                    </div>
+                                                                    {{$file->nombreArchivo}}
+                                                                </h5>
                                                                 @if ($file->tipoArchivo == 'atendido')
                                                                     <h6 class="card-subtitle mb-2 text-muted">Archivo de Seguimiento</h6>
                                                                 @else
                                                                     <h6 class="card-subtitle mb-2 text-muted">Archivo de Solicitud</h6>
                                                                 @endif
-                                                                @switch($ext)
-                                                                    @case('pdf')
-                                                                        <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
-                                                                        @break
-                                                                    @case('jpeg')
-                                                                        <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
-                                                                        @break
-                                                                    @case('jpg')
-                                                                        <a href="{{ route('verArchivo',$file->id) }}" class="view" target="_blank">Ver</a>
-                                                                        @break
-                                                                    @default
-
-                                                                @endswitch
-                                                                <a href="{{ route('descargarArchivo',$file->id) }}" class="download">Descargar</a>
+                                                                <a href="{{ route('archivo.getfile',$file->id) }}" class="view">Descargar</a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -251,13 +145,42 @@
 
 
 </div>
-</div>
 
+@include('modals.modalCorreccion')
 
+@endsection
+@section('contenidoJavaScript')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('assets/js/jqueryValidate/jquery.validate.js') }}"></script>
+<script src="{{ asset('assets/js/jqueryValidate/additional-methods.min.js') }}"></script>
 <script>
     var url = window.location.pathname;
     var id = url.substring(url.lastIndexOf('/') + 1);
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+        }
+    });
+
+    $('#corregirForm').validate({
+        errorClass: "error",
+        rules: {
+            organo: { required: true  },
+            servicio: { required: true},
+            archivoNuevo: {
+                extension: "jpg|jpeg|pdf|doc|docx|png|xlsx|xls"
+            }
+        },
+        messages:{
+            organo: {required: "El organo administrativo es requerido"},
+            servicio: {required: "Servicio es requerido"},
+        },
+        highlight: function(element, errorClass) {
+            $(element).addClass(errorClass);
+        }
+    });
 
     function aceptar() {
 
@@ -417,13 +340,11 @@
 
     $("#unidad").change(function() {
         var id = $(this).children(":selected").attr("value");
-        console.log(id);
         $.ajax({
             url: '/unidad/getOrgano/' + id,
             type: 'get',
             dataType: 'json',
             success: function(response) {
-                console.log(response)
                 $("#organoSelect").empty();
 
                 for (var i = 0; i < response.length; i++) {
@@ -436,32 +357,32 @@
 
 
     });
-    $("#organoSelect").change(function() {
+    $("#organo").change(function() {
         var id = $(this).children(":selected").attr("value");
-        console.log(id);
+        let URL = '{{ route("serviciosDepartamentos", ":id") }}';
+        URL = URL.replace(':id', id);
         $.ajax({
-            url: '/departamentos/servicios/' + id,
+            url: URL,
             type: 'get',
             dataType: 'json',
             success: function(response) {
                 console.log(response)
-                $("#servicioSelect").empty();
+                $("#servicio").empty();
                 var departamento = '';
                 for (var i = 0; i < response.length; i++) {
                     if (departamento != response[i]['departamento']) {
-                        $("#servicioSelect").append("<option disabled> ────────────────────────────────────────────────── </option>");
-                        $("#servicioSelect").append("<option disabled>" + response[i]['departamento'] + "</option>");
+                        $("#servicio").append("<option disabled> ────────────────────────────────────────────────── </option>");
+                        $("#servicio").append("<option disabled>" + response[i]['departamento'] + "</option>");
                         departamento = response[i]['departamento'];
                     }
-                    $("#servicioSelect").append("<option value='" + response[i]['idServicio'] + "-" + response[i]['idDepartamento'] + "'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + response[i]['descripcion'] + "</option>");
+                    $("#servicio").append("<option value='" + response[i]['idServicio'] + "-" + response[i]['idDepartamento'] + "'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + response[i]['descripcion'] + "</option>");
 
                 }
-                $("#servicioSelect").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
+                $("#servicio").prepend("<option value='default' selected='true' disabled='disabled'>Selecciona una opción</option>")
             }
         });
 
 
     });
 </script>
-
 @endsection

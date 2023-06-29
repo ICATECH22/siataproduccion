@@ -23,13 +23,13 @@
                                     <span class="subject">De: {{$solicitud->departamentoSolicitante}}</span>
                                     <span class="from">
                                         Solicitud: {{$solicitud->descripcion}} &nbsp; Estatus:@if($solicitud->estatusSolicitud == 'Pendiente')
-                                        <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-default">{{$solicitud->estatusSolicitud }} </a>
+                                        <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-default"><i class="fas fa-pause"></i> {{$solicitud->estatusSolicitud }} </a>
                                         @elseif($solicitud->estatusSolicitud == 'Rechazado')
-                                        <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-danger">{{$solicitud->estatusSolicitud }} </a>
+                                        <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-danger"><i class="fas fa-ban"></i> {{$solicitud->estatusSolicitud }} </a>
                                         @elseif($solicitud->estatusSolicitud == 'Atendido')
-                                        <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-success">{{$solicitud->estatusSolicitud }} </a>
+                                        <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-success"><i class="fas fa-check"></i> {{$solicitud->estatusSolicitud }} </a>
                                         @elseif($solicitud->estatusSolicitud == 'Turnado')
-                                        <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-warning">{{$solicitud->estatusSolicitud }} </a>
+                                        <a style="pointer-events: none; cursor: default; color: white;" type="button" class="btn btn-warning"><i class="fas fa-undo-alt"></i> {{$solicitud->estatusSolicitud }} </a>
                                         @endif
                                     </span>
                                 </div>

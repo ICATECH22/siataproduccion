@@ -99,14 +99,15 @@
 
 
             </ul>
-
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('catalogosLista') }}">
-                        <i class="ni ni-collection text-primary"></i> {{ __('Catalogos') }}
-                    </a>
-                </li>
-            </ul>
+            @if( Auth::user()->idRol == '1' )
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('catalogosLista') }}">
+                            <i class="ni ni-collection text-primary"></i> {{ __('Catálogos') }}
+                        </a>
+                    </li>
+                </ul>
+            @endif
             @if( Auth::user()->idRol == '1' )
             <ul class="navbar-nav">
                 <li class="nav-item">

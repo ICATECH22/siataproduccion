@@ -75,7 +75,7 @@ class OrganoController extends Controller
     public function edit($id)
     {
         $direccion = Organo::where('id', $id)->first();
-        return view('catalogos.organo.organoditar', compact('direccion'));
+        return view('catalogos.organo.organoEditar', compact('direccion'));
     }
 
     public function update(Request $request, $id)

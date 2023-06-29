@@ -149,7 +149,7 @@ class CatalogoDepartamentoController extends Controller
     {
         //
 
-        $departamento = Departamento::toBase()->where('idDepartamento', $id)->first();
+        $departamento = Departamento::toBase()->where('id', $id)->first();
         $unidades = Unidad::toBase()->where('estatus', '1')->get();
         return view('catalogos.departamentos.departamentoEditar', compact('departamento', 'unidades'));
     }

@@ -57,7 +57,7 @@
                                                 <span class="time">{{$solicitud->fechaCreacion}}</span>
                                             </header>
                                             <main>
-                                                <p>Detalles: {{$solicitud->detallesServicio}}</p>
+                                                <p class="evitar_desborde">Detalles: {{$solicitud->detallesServicio}}</p>
                                             </main>
                                         </message-item>
                                 </td>
@@ -77,8 +77,15 @@
             for (var i = 0; i < numUnidades; i++) {
                 new DataTable('#tablaEnviados' + i, {
                     language: {
-                        url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
+                        oPaginate: {
+                            sNext: '<i class="fas fa-fast-forward"></i>',
+                            sPrevious: '<i class="fas fa-fast-backward"></i>',
+                            sFirst: '<i class="fas fa-fast-backward"></i>',
+                            sLast: '<i class="fas fa-fast-forward"></i>'
+                        }
                     },
+                    pageLength: 5,
                 });
             }
         });

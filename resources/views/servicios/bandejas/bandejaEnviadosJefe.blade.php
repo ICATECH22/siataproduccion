@@ -13,11 +13,7 @@
                 @foreach($enviados as $solicitud)
                 <tr>
                     <td>
-                        @if($solicitud->visto == 0 && $solicitud->estatusSolicitud =='Pendiente')
-                        <message-item class="unread" onclick="verAtencion({{$solicitud->id}})" style="cursor: pointer; display:block  ">
-                        @else
-                        <message-item class="read" onclick="verAtencion({{$solicitud->id}})" style="cursor: pointer; display:block  ">
-                        @endif
+                        <message-item class="{{ $solicitud->visto == 0 && $solicitud->estatusSolicitud =='Pendiente' ? "unread" : "read"}}"  onclick="verAtencion({{$solicitud->id}})" style="cursor: pointer; display:block  ">
                             <header>
                                 <div class="sender-info">
                                     <span class="subject">De: {{$solicitud->departamentoSolicitante}}</span>
@@ -36,7 +32,7 @@
                                 <span class="time">{{$solicitud->fechaCreacion}}</span>
                             </header>
                             <main>
-                                <p>Detalles: {{$solicitud->detallesServicio}}</p>
+                                <p class="evitar_desborde">Detalles: {{$solicitud->detallesServicio}}</p>
                             </main>
                         </message-item>
                     </td>
@@ -55,8 +51,15 @@
         new DataTable('#tablaSolicitudesEnviados2', {
             ordering: false, //disable ordering datatable
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
+                oPaginate: {
+                    sNext: '<i class="fas fa-fast-forward"></i>',
+                    sPrevious: '<i class="fas fa-fast-backward"></i>',
+                    sFirst: '<i class="fas fa-fast-backward"></i>',
+                    sLast: '<i class="fas fa-fast-forward"></i>'
+                }
             },
+            pageLength: 5,
         });
     });
 

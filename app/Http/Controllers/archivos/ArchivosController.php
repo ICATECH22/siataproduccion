@@ -54,12 +54,17 @@ class ArchivosController extends Controller
         {
             abort(404);
         } else {
+
             $filepath = $files->urlArchivo;
             if (!\Storage::disk('public')->exists($filepath)) {
                 # checando si el archivo éxiste
                 abort(404); // si no hay abortamos
             }
-            return  \Storage::download($filepath);
+            $disk = \Storage::disk('public')->get($filepath);
+            $type = \Storage::disk('public')->getMimeType($filepath);
+            $response = \Response::make($disk, 200);
+            $response->header("Content-Type", $type);
+            return $response;
         }
     }
 

@@ -119,7 +119,7 @@
                                                                 @else
                                                                     <h6 class="card-subtitle mb-2 text-muted">Archivo de Solicitud</h6>
                                                                 @endif
-                                                                <a href="{{ route('archivo.getfile',$file->id) }}" class="view">Descargar</a>
+                                                                <a href="{{ route('archivo.getfile',$file->id) }}" class="view" target="_blank">Descargar</a>
                                                             </div>
                                                         </div>
                                                     </div>

@@ -1,17 +1,17 @@
 
 
-  
+
   inbox {
     margin: auto;
     padding-top: 50px;
   }
-  
+
   inbox-list {
     display: flex;
     width: 100%;
     flex-direction: column;
   }
-  
+
   message-item {
     width: 100%;
     padding: 1rem;
@@ -72,3 +72,7 @@
     color: #7e93a4;
     margin-bottom: 0;
   }
+  p.evitar_desborde{
+    width:870px;
+    word-break: keep-all;
+ }

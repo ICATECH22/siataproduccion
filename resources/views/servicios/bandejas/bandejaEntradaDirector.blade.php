@@ -93,8 +93,15 @@
             for (var i = 0; i < numUnidades; i++) {
                 new DataTable('#tablaSolicitudes' + i, {
                     language: {
-                        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
+                        oPaginate: {
+                            sNext: '<i class="fas fa-fast-forward"></i>',
+                            sPrevious: '<i class="fas fa-fast-backward"></i>',
+                            sFirst: '<i class="fas fa-fast-backward"></i>',
+                            sLast: '<i class="fas fa-fast-forward"></i>'
+                        }
                     },
+                    pageLength: 5,
                 });
             }
         });

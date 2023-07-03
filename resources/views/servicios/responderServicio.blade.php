@@ -260,28 +260,6 @@
             }
         });
 
-    // $('#unidades').on('change',async function(){
-    //    const idUnidad = this.value;
-    //    let URL = '{{ route("unidadOrgano", ":idUnidad") }}';
-    //    URL = URL.replace(':idUnidad', idUnidad);
-    //    const result = await $.get(URL)
-    //     .done(function(data, textStatus, jqXHR){
-    //         let opciones = '<option value="">Selecciona un Organo Administrativo</option>';
-    //         Object.values(data).forEach(val => {
-    //             opciones += '<option value="'+val.id+'">'+val.organo+'</option>';
-    //         });
-    //         document.getElementById('organos').innerHTML = opciones;
-    //     })
-    //     .fail(function( jqXHR, textStatus, errorThrown ){
-    //         console.log(jqXHR.statusText);
-    //         console.log(jqXHR.responseText);
-    //         console.log(jqXHR.status);
-    //         console.log(textStatus);
-    //         console.log(errorThrown);
-    //     });
-    //    return result;
-    // });
-
     $('#organos').on('change', async function(){
         const idOrgano = this.value;
         if (idOrgano.length > 0) {

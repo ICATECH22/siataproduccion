@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\catalogos\DepartamentoServicios;
 
 class CatalogoServiciosController extends Controller
 {
@@ -84,7 +85,7 @@ class CatalogoServiciosController extends Controller
     {
         //
         $servicio = Servicios::toBase()->where('idServicio', $id)->first();
-        $departamentos = DB::select('CALL `listaUnidades`()');
+        $departamentos = Departamento::all();
         return view('catalogos.servicios.servicioEditar', compact('servicio', 'departamentos'));
     }
 

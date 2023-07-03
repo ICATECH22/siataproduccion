@@ -3,6 +3,8 @@
 namespace App\Models\servicios;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\servicios\HistorialServicios;
 
 class SolicitudServicio extends Model
 {
@@ -28,5 +30,15 @@ class SolicitudServicio extends Model
         'idUsuarioUMod',
         'idUsuarioEliminacion'
     ];
-    
+
+    /**
+     * Get all of the comments for the Factura
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function historialservicio(): HasMany
+    {
+        return $this->hasMany(HistorialServicios::class, 'idSolicitud', 'id');
+    }
+
 }

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\archivos\ArchivosController;
+use App\Http\Controllers\servicios\FiltrarServicioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,5 +146,13 @@ Route::group(['middleware' => 'auth'], function () {
          * agregar una ruta extra para leer los archivos
          */
         Route::get('/archivo/{id}', [ArchivosController::class, 'show'])->name('archivo.getfile');
-
+        /**
+         * TURNADOS
+         */
+        Route::get('/servicios/turnados', 'App\Http\Controllers\servicios\ServicioController@turnados')->name('servicios.turnados');
+        /**
+         * filtros - getFilterByServicios
+         */
+        Route::get('/servicios/filtro/{idServicio}', [FiltrarServicioController::class, 'show'])->name('getFilterByServicios');
+        Route::get('/filtro/index', [FiltrarServicioController::class, 'index'])->name('filtro.index');
 });

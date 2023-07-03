@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View as IlluminateViewView;
+use App\Models\catalogos\DepartamentoServicios;
 
 class ServicioController extends Controller
 {
@@ -87,9 +88,13 @@ class ServicioController extends Controller
             }
         }
 
-        // dd($recibidos->toArray());
+        /**
+         * modificaciones por
+         */
+        $servicioByDepto = DepartamentoServicios::where('idDepartamento', $usuario->idOrganoDepartamento)
+            ->join('servicios', 'servicios.idServicio', '=', 'departamentoservicios.idServicio')->get();
 
-        return view('servicios.bandejaEntrada', compact('recibidos', 'usuario', 'director', 'departamentosDirector'));
+        return view('servicios.bandejaEntrada', compact('recibidos', 'usuario', 'director', 'departamentosDirector', 'servicioByDepto'));
     }
 
 
@@ -1258,5 +1263,33 @@ class ServicioController extends Controller
         // return view('servicios\bandejas\BandejaEntradaDirector', ['unidadesDirector'=>$unidadesDirector]);
 
         return response()->json($unidadesDirector);
+    }
+
+    public function turnados(Request $request){
+        if (Auth::user()->idRol == 3 || Auth::user()->idRol == 1) { //para jefes de departamentos
+            $usuario = User::with('rol', 'departamento')->where([['estatus', 1], ['idUsuario', Auth::id()]])->first();
+        } else {
+            $usuario = User::with('rol', 'organo')->where([['estatus', 1], ['idUsuario', Auth::id()]])->first();
+        }
+
+
+
+        $historial  = \DB::table('historialsolicitudes')
+                        ->select('deptoReceptor.departamento as receptor', 'solicitudes.descripcion', 'deptoSolicitante.departamento as solicitante', 'dpReceptor.departamento as receptorTurnado', 'servicios.descripcion as servicioDescripcion', 'solicitudes.descripcion as detallesServicio')
+                        ->join('solicitudes', function($join){
+                            $join->on('historialsolicitudes.idSolicitud', '=', 'solicitudes.id')
+                            ->join('departamento as deptoSolicitante', 'deptoSolicitante.id', '=', 'solicitudes.idDepartamentoSolicitante')
+                            ->join('departamento as deptoReceptor', 'deptoReceptor.id', '=', 'solicitudes.idDepartamentoReceptora');
+                        })
+                        ->join('departamento as dpReceptor', 'dpReceptor.id', '=', 'historialsolicitudes.idDepartamentoReceptora')
+                        ->join('servicios', 'servicios.idServicio', '=', 'historialsolicitudes.idServicio')
+                        ->where([['historialsolicitudes.idUsuarioAlta', $usuario->idUsuario], ['historialsolicitudes.estatusSolicitud', 'Turnado']])
+                        ->get();
+
+        // ->orWhere('historialsolicitudes.idDepartamentoReceptora', $usuario->idOrganoDepartamento)
+        $director = ($usuario->rol->id == 2 ? true : false); // checa si tiene rol de director
+
+
+        return view('servicios.bandejaTurnado', compact('historial', 'director'));
     }
 }

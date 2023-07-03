@@ -9,7 +9,7 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="mostrarInfo">
                 @foreach($recibidos as $solicitud)
                 <tr class="">
                     <td class="">

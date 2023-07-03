@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => __('User Profile')])
+@extends('layouts.app', ['title' => __('Editar Servicios')])
 
 @section('content')
 
@@ -53,9 +53,7 @@
                                         <select onchange="setDepartamento()" class="form-control form-control-alternative{{ $errors->has('direccion') ? ' is-invalid' : '' }}" aria-label=".form-select-md example" name="direccion" id="direccion">
                                             <option selected="true" disabled="disabled">Selecciona una Unidad</option>
 
-                                            @foreach($departamentos as $departamento)
-                                            <option name="direccion" {{$departamento->id == $servicio->idDepartamento ? 'selected' : ''}} value="{{ $departamento->id }}">{{ $departamento->departamento }}</option>
-                                            @endforeach
+
 
                                         </select>
 
@@ -88,7 +86,7 @@
     </div>
 </div>
 
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 

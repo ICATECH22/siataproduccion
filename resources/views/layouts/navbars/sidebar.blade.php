@@ -84,12 +84,20 @@
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('bandejaEntrada') }}">
-                                    {{ __('Bandeja de entrada') }}
+                                    <i class="fas fa-inbox"></i>
+                                    {{ __('Recibidos') }}
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('enviados') }}">
+                                    <i class="fas fa-paper-plane"></i>
                                     {{ __('Enviados') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('servicios.turnados') }}">
+                                    <i class="fas fa-undo"></i>
+                                    {{ __('Turnados') }}
                                 </a>
                             </li>
                         </ul>

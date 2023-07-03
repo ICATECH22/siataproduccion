@@ -3,8 +3,11 @@
 namespace App\Models\servicios;
 
 use App\Models\catalogos\Departamento;
+use App\Models\servicios\SolicitudServicio;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HistorialServicios extends Model
 {
@@ -30,11 +33,16 @@ class HistorialServicios extends Model
         'idUsuarioEliminacion'
     ];
 
-    
+
 
     public function usuario()
     {
         return $this->hasMany(User::class, 'idUsuarioAlta');
+    }
+
+    public function solicitudes(): BelongsTo
+    {
+        return $this->belongsTo(SolicitudServicio::class, 'idSolicitud', 'id');
     }
 
 }

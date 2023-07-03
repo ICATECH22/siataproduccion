@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => __('User Profile')])
+@extends('layouts.app', ['title' => __('Lista de Departamentos')])
 
 @section('content')
 
@@ -32,7 +32,7 @@
             </div>
             <div class="table-responsive">
                 <!-- Projects table -->
-                <table class="table align-items-center table-flush">
+                <table id="tableDeptos" class="table align-items-center table-flush">
                     <thead class="thead-light">
                         <tr>
                             <th scope="col">#</th>
@@ -76,14 +76,14 @@
 
 <script>
     $(document).ready(function() {
-        $('#myTable').DataTable({
+        $('#tableDeptos').DataTable({
             "scrollX": true,
             responsive: true,
             "order": [
                 [0, 'asc']
             ],
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
             }
         });
     });

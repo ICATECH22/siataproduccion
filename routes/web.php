@@ -112,7 +112,7 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::get('catalogos/departamentos/crear', ['as' => 'departamentosCrear', 'uses' => 'App\Http\Controllers\catalogos\CatalogoDepartamentoController@create']);
 		Route::post('catalogos/departamentos/guardar', ['as' => 'departamentoGuardar', 'uses' => 'App\Http\Controllers\catalogos\CatalogoDepartamentoController@store']);
 		Route::get('catalogos/departamentos/actualizar/{id}', ['as' => 'departamentoActualizar', 'uses' => 'App\Http\Controllers\catalogos\CatalogoDepartamentoController@edit']);
-		Route::post('catalogos/departamentos/actualizar/{id}', ['as' => 'departamentoUpdate', 'uses' => 'App\Http\Controllers\catalogos\CatalogoDepartamentoController@update']);
+		Route::put('departamentos/update/{id}', ['as' => 'departamentoUpdate', 'uses' => 'App\Http\Controllers\catalogos\CatalogoDepartamentoController@update']);
 		Route::get('catalogos/departamentos/asignar-servicio/{id}', ['as' => 'asignarServicios', 'uses' => 'App\Http\Controllers\catalogos\CatalogoDepartamentoController@asignarServicios']);
 		Route::post('catalogos/departamentos/asignar-servicio/{id}', ['as' => 'asignarServiciosStore', 'uses' => 'App\Http\Controllers\catalogos\CatalogoDepartamentoController@storeAsignarServicios']);
 		Route::delete('catalogos/departamentos/eliminar/{id}', ['as' => 'departamentoEliminar', 'uses' => 'App\Http\Controllers\catalogos\CatalogoDepartamentoController@destroy']);

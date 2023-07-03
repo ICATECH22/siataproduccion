@@ -43,7 +43,12 @@ class CatalogoDepartamentoController extends Controller
     {
         $servicios = Servicios::toBase()->where('estatus', 1)->get();
         $departamento = Departamento::where('id', $idDepartamento)->first();
-        return view('catalogos.departamentos.asignarServicio', compact('servicios','departamento','idDepartamento'));
+
+        $listadosServicios = DepartamentoServicios::select('servicios.descripcion')
+            ->join('departamento', 'departamento.id', '=', 'departamentoservicios.idDepartamento')
+            ->join('servicios', 'servicios.idServicio', '=', 'departamentoservicios.idServicio')
+            ->where('departamento.id', $idDepartamento)->get();
+        return view('catalogos.departamentos.asignarServicio', compact('servicios','departamento','idDepartamento', 'listadosServicios'));
     }
     public function storeAsignarServicios(Request $request, $idDepartamento)
     {
@@ -150,27 +155,32 @@ class CatalogoDepartamentoController extends Controller
         //
 
         $departamento = Departamento::toBase()->where('id', $id)->first();
-        $unidades = Unidad::toBase()->where('estatus', '1')->get();
-        return view('catalogos.departamentos.departamentoEditar', compact('departamento', 'unidades'));
+        $organos = Organo::toBase()->where('estatus', '1')->get();
+        return view('catalogos.departamentos.departamentoEditar', compact('departamento', 'organos'));
     }
 
 
     public function update(Request $request, $id)
     {
-
         $validated = $request->validate([
-            'descripcion' => 'required',
-            'idUnidad' => 'required'
+            'titularEditar' => 'required',
+            'deptoEditar' => 'required',
+            'emailEditar' => 'required',
+            'organoEditar' => 'required'
         ]);
         // dd($request->toArray());
 
         DB::beginTransaction();
         try {
             DB::table('departamento')
-                ->where('idDepartamento', $id)
+                ->where('id', $id)
                 ->update([
-                    'idUnidad' => $request['idUnidad'],
-                    'descripcion' => $request['descripcion'],
+                    'titular' => $request['titularEditar'],
+                    'departamento' => $request['deptoEditar'],
+                    'correo' => $request['emailEditar'],
+                    'idOrgano' => $request['organoEditar'],
+                    'telefono' => $request['telefonoEditar'],
+                    'celular' => $request['celularEditar'],
                     'idUsuarioUMod' => Auth::id(),
                     'fechaUMod' => Carbon::now()
                 ]);

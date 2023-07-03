@@ -1,8 +1,8 @@
-@extends('layouts.app', ['title' => __('User Profile')])
+@extends('layouts.app', ['title' => __('Catálogo de Asignar Servicio')])
 
 @section('content')
 @include('users.partials.header', [
-'title' => __('Nuevo Departamento/Area') ,
+'title' => __('Departamento /Asignar servicio') ,
 'description' => __('Modulo para crear direcciones'),
 'class' => 'col-lg-12'
 ])
@@ -15,9 +15,12 @@
                 <div class="card-header bg-white border-0">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h3 class="mb-0"><a href="{{route('departamentosLista')}}" class="back-button">
+                            <h3 class="mb-0">
+                                <a href="{{route('departamentosLista')}}" class="back-button">
                                     <i class="fas fa-chevron-left"></i>
-                                </a>Regresar a Lista Departamentos</h3>
+                                </a>
+                                Regresar a Lista Departamentos
+                            </h3>
                         </div>
                     </div>
                 </div>
@@ -32,6 +35,15 @@
                                 </div>
                             </div>
                         </div>
+                       {{-- modificaciones una lista de servicios --}}
+                        <h2><b>Listado de servicios asociados al departamento</b></h2>
+                        <ul class="list-group">
+                            @foreach ($listadosServicios as $item)
+                                <li class="list-group-item">{{ $item->descripcion }}</li>
+                            @endforeach
+                        </ul>
+                       {{-- modificaciones una lista de servicios END --}}
+                        <br>
                         <div class="form-group{{ $errors->has('servicio') ? ' has-danger' : '' }}">
                             <input type="text" hidden id="idServicio" name="idServicio">
                             <div class="input-group input-group-alternative mb-3">
@@ -41,9 +53,9 @@
                                 <input class="form-control{{ $errors->has('servicio') ? ' is-invalid' : '' }}" placeholder="{{ __('Servicio') }}" type="text" name="servicio" id="servicio" value="{{ old('servicio') }}" required autofocus>
                             </div>
                             @if ($errors->has('servicio'))
-                            <span class="invalid-feedback" style="display: block;" role="alert">
-                                <strong>{{ $errors->first('servicio') }}</strong>
-                            </span>
+                                <span class="invalid-feedback" style="display: block;" role="alert">
+                                    <strong>{{ $errors->first('servicio') }}</strong>
+                                </span>
                             @endif
                         </div>
                         <div class="row my-4">
@@ -123,10 +135,11 @@
     }
 
     function buscarServicio() {
-        var txtServicio = document.getElementById("txtServicio").value
-        if (txtServicio !== "") {
+        var txtServicio = document.getElementById("txtServicio").value;
+        if (txtServicio.length > 0) {
+            let url = "{{ route('servicioBuscar') }}"
             $.ajax({
-                url: '/catalogos/servicios/buscador',
+                url: url,
                 type: 'get',
                 data: {
                     "servicio": txtServicio
@@ -139,7 +152,7 @@
                     for (var i = 0; i < len; i++) {
                         var id = response[i]['idServicio']
                         var descripcion = response[i]['descripcion'];
-                        $("#searchResult").append("<li onclick='getID(this.id)' id='" + i + "' value='" + id + "'>" + descripcion + "</li>");
+                        $("#searchResult").append("<li class='list-group-item' onclick='getID(this.id)' id='" + i + "' value='" + id + "'>" + descripcion + "</li>");
                     }
                     $("#searchResult li").on("click", function() {
                         $("#searchResult").empty();
@@ -149,8 +162,7 @@
                 }
             });
         } else {
-
-            $('#otroPuebloC').hide();
+            $("#searchResult").empty();
         }
     }
 </script>

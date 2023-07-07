@@ -41,7 +41,7 @@
                                 @if($director)
                                     @include('servicios.bandejas.bandejaEntradaDirector')
                                 @else
-                                    @include('servicios.bandejas.bandejaTurnadojefe')
+                                    @include('servicios.bandejas.bandejaTurnadoJefe')
                                     {{-- se checa la bandeja de encontrada de los jefes turnados --}}
                                 @endif
                             </main>
